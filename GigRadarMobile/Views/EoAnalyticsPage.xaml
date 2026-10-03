@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
+             x:Class="GigRadarMobile.Views.EoAnalyticsPage"
+             x:DataType="vm:EoAnalyticsViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Analytics">
+    <ScrollView>
+        <VerticalStackLayout Padding="18,16,18,28" Spacing="16">
+            <VerticalStackLayout Spacing="3">
+                <Label Text="PERFORMANCE" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}" CharacterSpacing="1.5"/>
+                <Label Text="Analytics" Style="{StaticResource PageTitle}"/>
+                <Label Text="Pantau penjualan dan performa seluruh event kamu." Style="{StaticResource PageSubtitle}"/>
+            </VerticalStackLayout>
+
+            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Color="{StaticResource PrimaryColor}"/>
+            <Frame IsVisible="{Binding StatusMessage, Converter={StaticResource StringNotEmptyConverter}}"
+                   BackgroundColor="#2A1219" BorderColor="{StaticResource BorderColor}" CornerRadius="14" Padding="14" HasShadow="False">
+                <Label Text="{Binding StatusMessage}" TextColor="{StaticResource DangerColor}" FontSize="13"/>
+            </Frame>
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                <Frame Grid.Row="0" Grid.Column="0" Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{Binding Dashboard.TotalTicketsSold}" FontSize="25" FontAttributes="Bold" TextColor="{StaticResource WarningColor}"/>
+                        <Label Text="Tiket terjual" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                    </VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Row="0" Grid.Column="1" Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{Binding Dashboard.TotalRevenueFormatted}" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}" LineBreakMode="TailTruncation"/>
+                        <Label Text="Total pendapatan" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                    </VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Row="1" Grid.Column="0" Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{Binding Dashboard.TotalEvents}" FontSize="25" FontAttributes="Bold" TextColor="{StaticResource AccentColor}"/>
+                        <Label Text="Total event" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                    </VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Row="1" Grid.Column="1" Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{Binding Dashboard.UpcomingEvents}" FontSize="25" FontAttributes="Bold" TextColor="{StaticResource SuccessColor}"/>
+                        <Label Text="Event mendatang" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                    </VerticalStackLayout>
+                </Frame>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center" Margin="0,4,0,0">
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="Performa event" Style="{StaticResource SectionTitle}"/>
+                    <Label Text="Ringkasan penjualan per event" FontSize="12" TextColor="{StaticResource TextMuted}"/>
+                </VerticalStackLayout>
+                <Label Grid.Column="1" Text="LIVE DATA" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource SuccessColor}" VerticalOptions="End"/>
+            </Grid>
+
+            <Label Text="Belum ada data penjualan. Mulai buat event untuk melihat performanya."
+                   IsVisible="{Binding HasData, Converter={StaticResource InvertedBoolConverter}}"
+                   TextColor="{StaticResource TextSecondary}" FontSize="13"/>
+
+            <CollectionView ItemsSource="{Binding Dashboard.Events}" SelectionMode="None" IsVisible="{Binding HasData}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:EoEventStat">
+                        <Frame Style="{StaticResource Card}" Margin="0,0,0,10" Padding="15">
+                            <VerticalStackLayout Spacing="10">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                                    <VerticalStackLayout Spacing="3">
+                                        <Label Text="{Binding Name}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" LineBreakMode="TailTruncation"/>
+                                        <Label Text="{Binding DateLabel}" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                                    </VerticalStackLayout>
+                                    <Border Grid.Column="1" Stroke="{Binding StatusColor}" StrokeThickness="1" BackgroundColor="{StaticResource SurfaceColor}" StrokeShape="RoundRectangle 10" Padding="9,5" VerticalOptions="Start">
+                                        <Label Text="{Binding StatusLabel}" FontSize="10" FontAttributes="Bold" TextColor="{Binding StatusColor}"/>
+                                    </Border>
+                                </Grid>
+                                <BoxView HeightRequest="1" Color="{StaticResource BorderColor}"/>
+                                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                                    <VerticalStackLayout Spacing="2">
+                                        <Label Text="{Binding TicketsSold}" FontSize="19" FontAttributes="Bold" TextColor="{StaticResource WarningColor}"/>
+                                        <Label Text="Terjual" FontSize="11" TextColor="{StaticResource TextMuted}"/>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                        <Label Text="{Binding RemainingStock}" FontSize="19" FontAttributes="Bold" TextColor="{StaticResource AccentColor}"/>
+                                        <Label Text="Sisa stok" FontSize="11" TextColor="{StaticResource TextMuted}"/>
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="2" Spacing="2">
+                                        <Label Text="{Binding RevenueFormatted}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}" LineBreakMode="TailTruncation"/>
+                                        <Label Text="Pendapatan" FontSize="11" TextColor="{StaticResource TextMuted}"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                                <Label Text="{Binding TicketTypeCount, StringFormat='{0} tipe tiket'}" FontSize="11" TextColor="{StaticResource TextSecondary}"/>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             x:Class="GigRadarMobile.Views.LoginPage"
+             x:DataType="vm:LoginViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="GigRadar">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="28,48,28,28" Spacing="24" VerticalOptions="Center">
+
+            <!-- Brand -->
+            <VerticalStackLayout Spacing="8">
+                <Label Text="GIGRADAR" FontFamily="SpaceGroteskBold" FontSize="30" CharacterSpacing="3"
+                       TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                <Label Text="Menghubungkan skena, menemukan suara lokal."
+                       Style="{StaticResource Body}" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+            </VerticalStackLayout>
+
+            <!-- Form -->
+            <Border Style="{StaticResource CardBorder}" Padding="20">
+                <VerticalStackLayout Spacing="14">
+
+                    <Label Style="{StaticResource Title}" FontSize="20">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsRegister}" Value="True">
+                                <Setter Property="Text" Value="Daftar akun baru"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsRegister}" Value="False">
+                                <Setter Property="Text" Value="Masuk"/>
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+
+                    <Entry Text="{Binding Name}" Placeholder="Nama" IsVisible="{Binding IsRegister}"/>
+
+                    <!-- Pilihan role saat daftar (§25): User langsung aktif, Artist/EO menunggu verifikasi admin -->
+                    <VerticalStackLayout IsVisible="{Binding IsRegister}" Spacing="8">
+                        <Label Text="DAFTAR SEBAGAI" Style="{StaticResource Eyebrow}"/>
+                        <HorizontalStackLayout Spacing="12">
+                            <RadioButton x:Name="RoleUserRadio" Content="User" GroupName="RoleSelection" CheckedChanged="OnRoleChecked"/>
+                            <RadioButton x:Name="RoleArtistRadio" Content="Artist" GroupName="RoleSelection" CheckedChanged="OnRoleChecked"/>
+                            <RadioButton x:Name="RoleEoRadio" Content="EO" GroupName="RoleSelection" CheckedChanged="OnRoleChecked"/>
+                        </HorizontalStackLayout>
+                        <Label Text="{Binding SelectedRoleDescription}" Style="{StaticResource Meta}"/>
+                    </VerticalStackLayout>
+
+                    <Entry Text="{Binding Email}" Placeholder="Email" Keyboard="Email"/>
+
+                    <Entry Text="{Binding Password}" Placeholder="Password" IsPassword="True"/>
+
+                    <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" HeightRequest="20"/>
+
+                    <Button Style="{StaticResource BtnPrimary}" HeightRequest="50" Command="{Binding LoginCommand}">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsRegister}" Value="True">
+                                <Setter Property="Text" Value="Daftar"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Button" Binding="{Binding IsRegister}" Value="False">
+                                <Setter Property="Text" Value="Masuk"/>
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+
+                    <Label Style="{StaticResource Caption}" HorizontalOptions="Center" TextColor="{StaticResource PrimaryColor}">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ToggleModeCommand}"/>
+                        </Label.GestureRecognizers>
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsRegister}" Value="True">
+                                <Setter Property="Text" Value="Sudah punya akun? Masuk"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label" Binding="{Binding IsRegister}" Value="False">
+                                <Setter Property="Text" Value="Belum punya akun? Daftar"/>
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

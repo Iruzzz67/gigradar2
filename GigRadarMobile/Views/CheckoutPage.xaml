@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             x:Class="GigRadarMobile.Views.CheckoutPage"
+             x:DataType="vm:CheckoutViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Pembayaran">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,20,20,28" Spacing="24">
+
+            <!-- Ringkasan pesanan -->
+            <VerticalStackLayout Spacing="10">
+                <Label Text="RINGKASAN PESANAN" Style="{StaticResource Eyebrow}"/>
+                <Border Style="{StaticResource CardBorder}" Padding="16">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="{Binding EventName}" Style="{StaticResource Title}" FontSize="20" MaxLines="2" LineBreakMode="TailTruncation"/>
+                        <HorizontalStackLayout Spacing="6">
+                            <Label Text="{Binding EventDate}" Style="{StaticResource Caption}"/>
+                            <Label Text="•" TextColor="{StaticResource TextMuted}"/>
+                            <Label Text="{Binding VenueName}" Style="{StaticResource Caption}" MaxLines="1" LineBreakMode="TailTruncation"/>
+                        </HorizontalStackLayout>
+                        <BoxView Style="{StaticResource Hairline}"/>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="{Binding TypeName}" Style="{StaticResource Subheading}"/>
+                                <Label Text="1 tiket" Style="{StaticResource Meta}"/>
+                            </VerticalStackLayout>
+                            <Label Grid.Column="1" Text="{Binding PriceFormatted}" Style="{StaticResource Numeric}" FontSize="16"
+                                   TextColor="{StaticResource PrimaryColor}" VerticalOptions="Center"/>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Data diri pembeli -->
+            <VerticalStackLayout Spacing="12">
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="DATA DIRI PEMBELI" Style="{StaticResource Eyebrow}"/>
+                    <Label Text="Dipakai untuk verifikasi tiket. Minimal umur 17 tahun."
+                           Style="{StaticResource Body}" FontSize="12"/>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Nama lengkap" Style="{StaticResource Caption}"/>
+                    <Entry Text="{Binding FullName}" Placeholder="Nama sesuai KTP"/>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Nomor telepon" Style="{StaticResource Caption}"/>
+                    <Entry Text="{Binding Phone}" Placeholder="08xxxxxxxxxx" Keyboard="Telephone"/>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Email" Style="{StaticResource Caption}"/>
+                    <Entry Text="{Binding Email}" Placeholder="email@contoh.com" Keyboard="Email"/>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Tanggal lahir" Style="{StaticResource Caption}"/>
+                    <Border BackgroundColor="{StaticResource CardElevatedColor}" StrokeThickness="0"
+                            StrokeShape="RoundRectangle 12" Padding="12,2">
+                        <DatePicker Date="{Binding BirthDate}" MaximumDate="{x:Static sys:DateTime.Today}"
+                                    Format="dd MMM yyyy" FontSize="15" TextColor="{StaticResource TextPrimary}"/>
+                    </Border>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
+            <!-- Pembayaran -->
+            <VerticalStackLayout Spacing="10">
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="PEMBAYARAN" Style="{StaticResource Eyebrow}"/>
+                    <Label Text="Transfer bank / e-wallet — simulasi, tanpa potongan biaya."
+                           Style="{StaticResource Body}" FontSize="12"/>
+                </VerticalStackLayout>
+                <Border Style="{StaticResource CardBorder}" Padding="16">
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <Label Text="Total" Style="{StaticResource Subheading}" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Text="{Binding PriceFormatted}" Style="{StaticResource Numeric}" FontSize="18"
+                                   TextColor="{StaticResource PrimaryColor}"/>
+                        </Grid>
+                        <Button Text="Bayar sekarang" Style="{StaticResource BtnBuy}"
+                                Command="{Binding PayCommand}" IsEnabled="{Binding IsProcessing, Converter={StaticResource InvertedBoolConverter}}"/>
+                        <ActivityIndicator IsRunning="{Binding IsProcessing}" IsVisible="{Binding IsProcessing}" HeightRequest="20"/>
+                        <Label Text="Dengan membayar, kamu menyetujui syarat &amp; ketentuan tiket."
+                               Style="{StaticResource Meta}" HorizontalTextAlignment="Center"/>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

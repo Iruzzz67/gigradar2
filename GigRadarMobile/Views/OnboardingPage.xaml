@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
+             x:Class="GigRadarMobile.Views.OnboardingPage"
+             x:DataType="vm:OnboardingViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Onboarding">
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="20,24,20,24" RowSpacing="20">
+
+        <VerticalStackLayout Grid.Row="0" Spacing="4">
+            <Label Text="ONBOARDING" Style="{StaticResource Eyebrow}"/>
+            <Label Text="Genre yang kamu dengerin" Style="{StaticResource PageTitle}"/>
+            <Label Text="Pilih minimal satu. Ini dipakai buat rekomendasi dan radar kamu."
+                   Style="{StaticResource Body}" FontSize="12"/>
+        </VerticalStackLayout>
+
+        <Grid Grid.Row="1">
+            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" HorizontalOptions="Center" VerticalOptions="Center"/>
+
+            <ScrollView IsVisible="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}">
+                <FlexLayout Wrap="Wrap" Direction="Row" JustifyContent="Start" AlignItems="Center"
+                            BindableLayout.ItemsSource="{Binding Genres}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:Genre">
+                            <Border Margin="0,0,10,10" Padding="16,10" StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 999" BackgroundColor="{StaticResource CardElevatedColor}">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OnboardingViewModel}}, Path=ToggleGenreCommand}"
+                                                          CommandParameter="{Binding .}"/>
+                                </Border.GestureRecognizers>
+                                <Grid ColumnDefinitions="Auto,Auto" ColumnSpacing="6">
+                                    <Label Grid.Column="0" Text="{Binding Icon}" FontSize="14" VerticalOptions="Center"/>
+                                    <Label Grid.Column="1" Text="{Binding Name}" FontFamily="InterMedium" FontSize="14"
+                                           TextColor="{StaticResource TextSecondary}" VerticalOptions="Center">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                                <Setter Property="TextColor" Value="{StaticResource OnAccent}"/>
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </Grid>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/>
+                                    </DataTrigger>
+                                </Border.Triggers>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+            </ScrollView>
+        </Grid>
+
+        <Button Grid.Row="2" Text="Lanjut" Style="{StaticResource BtnBuy}" HeightRequest="54"
+                Command="{Binding FinishOnboardingCommand}"/>
+
+    </Grid>
+
+</ContentPage>

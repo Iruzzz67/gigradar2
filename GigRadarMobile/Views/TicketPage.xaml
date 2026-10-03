@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
+             x:Class="GigRadarMobile.Views.TicketPage"
+             x:DataType="vm:TicketViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="My Tickets">
+
+    <VerticalStackLayout Spacing="0">
+        <VerticalStackLayout Padding="20,16,20,4" Spacing="4">
+            <Label Text="TIKETS" Style="{StaticResource Eyebrow}"/>
+            <Label Text="Tiketku" Style="{StaticResource PageTitle}"/>
+        </VerticalStackLayout>
+
+        <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Margin="0,20"/>
+
+        <CollectionView ItemsSource="{Binding Tickets}" SelectionMode="None" Margin="20,8,20,20">
+            <CollectionView.EmptyView>
+                <VerticalStackLayout Spacing="8" Padding="0,60">
+                    <Label Text="Belum ada tiket" Style="{StaticResource Subheading}" HorizontalTextAlignment="Center"/>
+                    <Label Text="Temukan gig di Discover atau Radar, lalu beli tiket pertamamu."
+                           Style="{StaticResource Body}" FontSize="12" HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Ticket">
+                    <Border BackgroundColor="{StaticResource CardColor}" Stroke="{StaticResource BorderColor}"
+                            StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="0" Margin="0,7">
+                        <VerticalStackLayout>
+
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" Padding="16,14">
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                    <Label Text="{Binding EventName}" Style="{StaticResource Subheading}"
+                                           MaxLines="2" LineBreakMode="TailTruncation"/>
+                                    <Label Text="{Binding EventDate}" Style="{StaticResource Caption}"/>
+                                    <Label Text="{Binding VenueName}" Style="{StaticResource Meta}" MaxLines="1" LineBreakMode="TailTruncation"/>
+                                    <HorizontalStackLayout Spacing="8">
+                                        <Label Text="{Binding TicketType}" Style="{StaticResource Meta}"
+                                               FontFamily="InterSemiBold" TextColor="{StaticResource PrimaryColor}"/>
+                                        <Label Text="•" TextColor="{StaticResource TextMuted}"/>
+                                        <Label Text="{Binding Status}" Style="{StaticResource Meta}"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                                <Label Grid.Column="1" Text="{Binding PriceFormatted}" Style="{StaticResource Numeric}"
+                                       FontSize="14" TextColor="{StaticResource PrimaryColor}"
+                                       VerticalOptions="Center" HorizontalTextAlignment="End"/>
+                            </Grid>
+
+                            <!-- Barcode -->
+                            <VerticalStackLayout Padding="16,10" Spacing="6" BackgroundColor="White">
+                                <GraphicsView HeightRequest="56" HorizontalOptions="Fill"
+                                              Drawable="{Binding QRCode, Converter={StaticResource BarcodeDrawableConverter}}"/>
+                                <Label Text="{Binding QrDisplay}" FontFamily="SpaceGroteskMedium" FontSize="9" TextColor="#666666"
+                                       HorizontalTextAlignment="Center"/>
+                            </VerticalStackLayout>
+
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+
+</ContentPage>

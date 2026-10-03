@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
+             x:Class="GigRadarMobile.Views.EoProfilePage"
+             x:DataType="vm:EoProfileViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Dashboard EO">
+    <ScrollView>
+        <VerticalStackLayout Padding="18,16,18,30" Spacing="16">
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                <Frame Grid.Column="0" BackgroundColor="{StaticResource CardElevatedColor}" CornerRadius="26" WidthRequest="52" HeightRequest="52" Padding="0" HasShadow="False" BorderColor="{StaticResource BorderColor}">
+                    <Label Text="{Binding Initials}" FontFamily="SpaceGroteskBold" FontSize="17" TextColor="{StaticResource PrimaryColor}" HorizontalOptions="Center" VerticalOptions="Center"/>
+                </Frame>
+                <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                    <Label Text="EO DASHBOARD" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}" CharacterSpacing="1.2"/>
+                    <Label Text="{Binding UserName}" FontSize="19" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" LineBreakMode="TailTruncation"/>
+                    <Label Text="{Binding RoleBadge}" FontSize="11" TextColor="{Binding RoleBadgeColor}"/>
+                </VerticalStackLayout>
+                <Label Grid.Column="2" Text="●" FontSize="12" TextColor="{StaticResource SuccessColor}" VerticalOptions="Center"/>
+            </Grid>
+
+            <Frame BackgroundColor="{StaticResource AccentSoft}" BorderColor="{StaticResource BorderStrong}" CornerRadius="18" Padding="18" HasShadow="False">
+                <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" RowSpacing="12">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="SIAP NAIKKAN EVENT BERIKUTNYA?" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}" CharacterSpacing="1"/>
+                        <Label Text="Kelola event, tiket, dan pendapatan dari satu tempat." FontSize="17" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+                    </VerticalStackLayout>
+                    <Button Grid.Row="1" Text="Buat event" BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}" FontAttributes="Bold" CornerRadius="11" HeightRequest="44" Padding="16,0" Command="{Binding GoToCreateEventCommand}"/>
+                </Grid>
+            </Frame>
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                <Frame Grid.Row="0" Grid.Column="0" Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="4"><Label Text="{Binding Dashboard.TotalEvents}" FontSize="25" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}"/><Label Text="Total event" FontSize="12" TextColor="{StaticResource TextSecondary}"/></VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Row="0" Grid.Column="1" Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="4"><Label Text="{Binding Dashboard.UpcomingEvents}" FontSize="25" FontAttributes="Bold" TextColor="{StaticResource AccentColor}"/><Label Text="Mendatang" FontSize="12" TextColor="{StaticResource TextSecondary}"/></VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Row="1" Grid.Column="0" Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="4"><Label Text="{Binding Dashboard.TotalTicketsSold}" FontSize="25" FontAttributes="Bold" TextColor="{StaticResource WarningColor}"/><Label Text="Tiket terjual" FontSize="12" TextColor="{StaticResource TextSecondary}"/></VerticalStackLayout>
+                </Frame>
+                <Frame Grid.Row="1" Grid.Column="1" Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="4"><Label Text="{Binding Dashboard.TotalRevenueFormatted}" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}" LineBreakMode="TailTruncation"/><Label Text="Pendapatan" FontSize="12" TextColor="{StaticResource TextSecondary}"/></VerticalStackLayout>
+                </Frame>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,Auto" Margin="0,3,0,0">
+                <VerticalStackLayout Spacing="2"><Label Text="Aksi cepat" Style="{StaticResource SectionTitle}"/><Label Text="Pintasan untuk operasional event" FontSize="12" TextColor="{StaticResource TextMuted}"/></VerticalStackLayout>
+            </Grid>
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                <Button Grid.Column="0" Text="Kelola tiket" BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}" FontAttributes="Bold" CornerRadius="12" HeightRequest="46" Command="{Binding GoToManageTicketsCommand}"/>
+                <Button Grid.Column="1" Text="Edit profil" BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource TextPrimary}" BorderColor="{StaticResource BorderColor}" BorderWidth="1" CornerRadius="12" HeightRequest="46" Command="{Binding ToggleEditCommand}"/>
+            </Grid>
+
+            <Frame BackgroundColor="{StaticResource CardColor}" BorderColor="{StaticResource BorderColor}" CornerRadius="16" Padding="15" HasShadow="False" IsVisible="{Binding IsEditing}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Edit profil" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+                    <Entry Text="{Binding UserName}" Placeholder="Nama lengkap" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
+                    <Entry Text="{Binding UserCity}" Placeholder="Kota" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
+                    <Entry Text="{Binding UserPhotoUrl}" Placeholder="URL foto profil (opsional)" BackgroundColor="{StaticResource SurfaceColor}" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextMuted}"/>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10"><Button Grid.Column="0" Text="Batal" BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource TextSecondary}" CornerRadius="10" HeightRequest="44" Command="{Binding ToggleEditCommand}"/><Button Grid.Column="1" Text="Simpan" BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource OnAccent}" FontAttributes="Bold" CornerRadius="10" HeightRequest="44" Command="{Binding SaveProfileCommand}"/></Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Grid ColumnDefinitions="*,Auto" Margin="0,3,0,0"><VerticalStackLayout Spacing="2"><Label Text="Event kamu" Style="{StaticResource SectionTitle}"/><Label Text="Pantau status dan hasil penjualan" FontSize="12" TextColor="{StaticResource TextMuted}"/></VerticalStackLayout><Label Grid.Column="1" Text="{Binding Dashboard.TotalEvents, StringFormat='{0} event'}" FontSize="11" TextColor="{StaticResource TextSecondary}" VerticalOptions="End"/></Grid>
+            <Label Text="Belum ada event. Buat event pertamamu untuk mulai berjualan."
+                   IsVisible="{Binding HasEvents, Converter={StaticResource InvertedBoolConverter}}" TextColor="{StaticResource TextSecondary}" FontSize="13"/>
+            <CollectionView ItemsSource="{Binding Dashboard.Events}" SelectionMode="None" IsVisible="{Binding HasEvents}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:EoEventStat">
+                        <Frame Style="{StaticResource Card}" Margin="0,0,0,10" Padding="15">
+                            <VerticalStackLayout Spacing="10">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                    <VerticalStackLayout Spacing="3"><Label Text="{Binding Name}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" LineBreakMode="TailTruncation"/><Label Text="{Binding DateLabel}" FontSize="12" TextColor="{StaticResource TextSecondary}"/></VerticalStackLayout>
+                                    <Border Grid.Column="1" Stroke="{Binding StatusColor}" StrokeThickness="1" BackgroundColor="{StaticResource SurfaceColor}" StrokeShape="RoundRectangle 10" Padding="8,5"><Label Text="{Binding StatusLabel}" FontSize="10" FontAttributes="Bold" TextColor="{Binding StatusColor}"/></Border>
+                                </Grid>
+                                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                    <VerticalStackLayout Spacing="2"><Label Text="{Binding SoldLabel}" FontSize="12" TextColor="{StaticResource WarningColor}"/><Label Text="{Binding TicketTypeCount, StringFormat='{0} tipe tiket'}" FontSize="11" TextColor="{StaticResource TextMuted}"/></VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="1" HorizontalOptions="End" Spacing="2"><Label Text="{Binding RevenueFormatted}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}" HorizontalTextAlignment="End"/><Label Text="Pendapatan" FontSize="11" TextColor="{StaticResource TextMuted}" HorizontalTextAlignment="End"/></VerticalStackLayout>
+                                </Grid>
+                                <BoxView HeightRequest="1" Color="{StaticResource BorderColor}"/>
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="7">
+                                    <Button Grid.Column="0" Text="{Binding PrimaryActionLabel}" FontSize="11" FontAttributes="Bold" HeightRequest="38" CornerRadius="9" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EoProfileViewModel}}, Path=TogglePrimaryActionCommand}" CommandParameter="{Binding .}"><Button.Style><Style TargetType="Button"><Setter Property="BackgroundColor" Value="{StaticResource PrimaryColor}"/><Setter Property="TextColor" Value="{StaticResource OnAccent}"/><Style.Triggers><DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Published"><Setter Property="BackgroundColor" Value="#8A4B08"/><Setter Property="TextColor" Value="White"/></DataTrigger></Style.Triggers></Style></Button.Style></Button>
+                                    <Button Grid.Column="1" Text="✓ Selesai" FontSize="11" FontAttributes="Bold" HeightRequest="38" CornerRadius="9" Padding="10,0" BackgroundColor="{StaticResource CardElevatedColor}" TextColor="{StaticResource TextSecondary}" IsVisible="{Binding CanMarkCompleted}" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EoProfileViewModel}}, Path=MarkCompletedCommand}" CommandParameter="{Binding .}"/>
+                                    <Button Grid.Column="2" Text="Hapus" FontSize="11" FontAttributes="Bold" HeightRequest="38" CornerRadius="9" Padding="10,0" BackgroundColor="#2A1219" TextColor="{StaticResource DangerColor}" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EoProfileViewModel}}, Path=DeleteEventCommand}" CommandParameter="{Binding .}"/>
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

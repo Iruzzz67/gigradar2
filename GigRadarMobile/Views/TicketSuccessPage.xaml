@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             x:Class="GigRadarMobile.Views.TicketSuccessPage"
+             x:DataType="vm:TicketSuccessViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Tiket Berhasil"
+             Shell.NavBarIsVisible="True">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,20,20,28" Spacing="20">
+
+            <VerticalStackLayout Spacing="6">
+                <Label Text="PEMBELIAN BERHASIL" Style="{StaticResource Eyebrow}" HorizontalTextAlignment="Center"/>
+                <Label Text="Tiket kamu aman." Style="{StaticResource Title}" HorizontalTextAlignment="Center"/>
+                <Label Text="Tunjukkan barcode ini di pintu masuk venue. Simpan screenshot sebagai cadangan."
+                       Style="{StaticResource Body}" HorizontalTextAlignment="Center" FontSize="12"/>
+            </VerticalStackLayout>
+
+            <!-- ===== Digital ticket ===== -->
+            <Border BackgroundColor="{StaticResource CardColor}" Stroke="{StaticResource BorderStrong}"
+                    StrokeThickness="1" StrokeShape="RoundRectangle 18" Padding="0">
+
+                <VerticalStackLayout Spacing="0">
+
+                    <!-- Header tiket -->
+                    <Grid Padding="20,16" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <VerticalStackLayout Grid.Column="0" Spacing="3">
+                            <Label Text="GIGRADAR TICKET" Style="{StaticResource Meta}" CharacterSpacing="1.6"
+                                   TextColor="{StaticResource PrimaryColor}"/>
+                            <Label Text="{Binding EventName}" Style="{StaticResource Title}" FontSize="20"
+                                   MaxLines="2" LineBreakMode="TailTruncation"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4" HorizontalOptions="End">
+                            <Border StrokeThickness="0" StrokeShape="RoundRectangle 999"
+                                    BackgroundColor="{StaticResource AccentSoft}" Padding="10,4">
+                                <Label Text="ACTIVE" FontFamily="InterSemiBold" FontSize="10" CharacterSpacing="1"
+                                       TextColor="{StaticResource PrimaryColor}"/>
+                            </Border>
+                            <Label Text="{Binding PriceFormatted}" Style="{StaticResource Numeric}" FontSize="16"
+                                   TextColor="{StaticResource PrimaryColor}" HorizontalTextAlignment="End"/>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Garis perforasi dengan notch -->
+                    <Grid HeightRequest="24">
+                        <BoxView Style="{StaticResource Hairline}" VerticalOptions="Center"/>
+                        <Border WidthRequest="22" HeightRequest="22" VerticalOptions="Center" HorizontalOptions="Start"
+                                Margin="-11,0,0,0" StrokeThickness="0" StrokeShape="RoundRectangle 999"
+                                BackgroundColor="{StaticResource BackgroundColor}"/>
+                        <Border WidthRequest="22" HeightRequest="22" VerticalOptions="Center" HorizontalOptions="End"
+                                Margin="0,0,-11,0" StrokeThickness="0" StrokeShape="RoundRectangle 999"
+                                BackgroundColor="{StaticResource BackgroundColor}"/>
+                    </Grid>
+
+                    <!-- Detail tiket -->
+                    <VerticalStackLayout Padding="20,14" Spacing="10">
+                        <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" RowSpacing="12" ColumnSpacing="16">
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2">
+                                <Label Text="TANGGAL" Style="{StaticResource Meta}"/>
+                                <Label Text="{Binding EventDate}" Style="{StaticResource Subheading}" FontSize="14"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="2">
+                                <Label Text="VENUE" Style="{StaticResource Meta}"/>
+                                <Label Text="{Binding VenueName}" Style="{StaticResource Subheading}" FontSize="14"
+                                       MaxLines="1" LineBreakMode="TailTruncation"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Row="1" Grid.Column="0" Spacing="2">
+                                <Label Text="TIPE" Style="{StaticResource Meta}"/>
+                                <Label Text="{Binding TypeName}" Style="{StaticResource Subheading}" FontSize="14"/>
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Row="1" Grid.Column="1" Spacing="2">
+                                <Label Text="ATAS NAMA" Style="{StaticResource Meta}"/>
+                                <Label Text="{Binding BuyerName}" Style="{StaticResource Subheading}" FontSize="14"
+                                       MaxLines="1" LineBreakMode="TailTruncation"/>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <!-- Barcode -->
+                    <VerticalStackLayout Padding="20,14,20,18" Spacing="8" BackgroundColor="White">
+                        <GraphicsView x:Name="BarcodeView" HeightRequest="90" WidthRequest="280"
+                                      HorizontalOptions="Center"/>
+                        <Label Text="{Binding QRCode}" FontFamily="SpaceGroteskMedium" FontSize="11" TextColor="#333333"
+                               HorizontalTextAlignment="Center" LineBreakMode="MiddleTruncation"/>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </Border>
+
+            <Button Text="Lihat My Tickets" Style="{StaticResource BtnPrimary}" HeightRequest="52"
+                    Command="{Binding GoToMyTicketsCommand}"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

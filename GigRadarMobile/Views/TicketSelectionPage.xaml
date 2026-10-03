@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             xmlns:models="clr-namespace:GigRadarMobile.Models"
+             x:Class="GigRadarMobile.Views.TicketSelectionPage"
+             x:DataType="vm:TicketSelectionViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Pilih Tiket">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,20,20,28" Spacing="20">
+
+            <!-- Event context -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="PILIH TIKET" Style="{StaticResource Eyebrow}"/>
+                <Label Text="{Binding GigEvent.Name}" Style="{StaticResource PageTitle}" MaxLines="2" LineBreakMode="TailTruncation"/>
+                <HorizontalStackLayout Spacing="6">
+                    <Label Text="{Binding GigEvent.DateFormatted}" Style="{StaticResource Caption}"/>
+                    <Label Text="•" TextColor="{StaticResource TextMuted}"/>
+                    <Label Text="{Binding GigEvent.VenueName}" Style="{StaticResource Caption}" MaxLines="1" LineBreakMode="TailTruncation"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+            <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}"/>
+
+            <Label Text="{Binding StatusMessage}" Style="{StaticResource Body}" TextColor="{StaticResource DangerColor}"
+                   IsVisible="{Binding HasTypes, Converter={StaticResource InvertedBoolConverter}}"/>
+
+            <!-- Tier list -->
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding TicketTypes}" Spacing="10">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="models:EventTicketType">
+                        <Border BackgroundColor="{StaticResource CardColor}" Stroke="{StaticResource BorderColor}"
+                                StrokeThickness="1" StrokeShape="RoundRectangle 14" Padding="16"
+                                Opacity="{Binding IsSoldOut, Converter={StaticResource SoldOutOpacityConverter}}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TicketSelectionViewModel}}, Path=SelectTypeCommand}"
+                                                      CommandParameter="{Binding .}"/>
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                                <Border Grid.Column="0" WidthRequest="22" HeightRequest="22" VerticalOptions="Center"
+                                        Stroke="{StaticResource BorderStrong}" StrokeThickness="1.5"
+                                        StrokeShape="RoundRectangle 999" BackgroundColor="Transparent">
+                                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 999" WidthRequest="12" HeightRequest="12"
+                                            BackgroundColor="{StaticResource PrimaryColor}" IsVisible="{Binding IsSoldOut, Converter={StaticResource InvertedBoolConverter}}"/>
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                    <Label Text="{Binding Name}" Style="{StaticResource Subheading}"/>
+                                    <Label Text="{Binding Description}" Style="{StaticResource Body}" FontSize="12"
+                                           MaxLines="2" LineBreakMode="TailTruncation"
+                                           IsVisible="{Binding Description, Converter={StaticResource StringNotEmptyConverter}}"/>
+                                    <Label Text="{Binding StockLabel}" Style="{StaticResource Meta}" TextColor="{Binding StockColor}"/>
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="2" Spacing="2" VerticalOptions="Center" HorizontalOptions="End">
+                                    <Label Text="{Binding PriceFormatted}" Style="{StaticResource Numeric}" FontSize="15"
+                                           TextColor="{StaticResource PrimaryColor}" HorizontalTextAlignment="End"/>
+                                    <Label Text="Pilih ›" Style="{StaticResource Meta}" FontSize="11" HorizontalTextAlignment="End"
+                                           IsVisible="{Binding IsSoldOut, Converter={StaticResource InvertedBoolConverter}}"/>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <!-- Pembelian eksternal -->
+            <Border IsVisible="{Binding GigEvent.HasExternalLink}" Style="{StaticResource CardBorder}" Padding="16">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="PEMBELIAN EKSTERNAL" Style="{StaticResource Eyebrow}"/>
+                    <Label Text="Tiket event ini dijual melalui situs mitra resmi. Kamu akan diarahkan keluar aplikasi."
+                           Style="{StaticResource Body}"/>
+                    <Button Text="Beli di situs mitra" Style="{StaticResource BtnPrimary}" HeightRequest="48"
+                            Command="{Binding OpenExternalLinkCommand}"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

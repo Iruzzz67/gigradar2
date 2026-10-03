@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:GigRadarMobile.ViewModels"
+             x:Class="GigRadarMobile.Views.ProfilePage"
+             x:DataType="vm:ProfileViewModel"
+             BackgroundColor="{StaticResource BackgroundColor}"
+             Title="Profile">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,24,20,28" Spacing="16">
+
+            <VerticalStackLayout Spacing="6">
+                <Label Text="PROFILE" Style="{StaticResource Eyebrow}" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+
+            <!-- Identitas -->
+            <VerticalStackLayout Spacing="10">
+                <Border WidthRequest="88" HeightRequest="88" HorizontalOptions="Center" StrokeThickness="0"
+                        StrokeShape="RoundRectangle 999" BackgroundColor="{StaticResource CardElevatedColor}">
+                    <Label Text="{Binding Initials}" FontFamily="SpaceGroteskBold" FontSize="30"
+                           TextColor="{StaticResource PrimaryColor}" HorizontalOptions="Center" VerticalOptions="Center"/>
+                </Border>
+                <Label Text="{Binding UserName}" Style="{StaticResource Title}" HorizontalOptions="Center"/>
+                <Label Text="{Binding UserEmail}" Style="{StaticResource Body}" HorizontalOptions="Center"/>
+                <HorizontalStackLayout Spacing="4" HorizontalOptions="Center">
+                    <Label Text="Kota:" Style="{StaticResource Meta}"/>
+                    <Label Text="{Binding UserCity}" Style="{StaticResource Meta}" TextColor="{StaticResource TextSecondary}"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+            <!-- Edit form -->
+            <Border Style="{StaticResource CardBorder}" IsVisible="{Binding IsEditing}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Edit profil" Style="{StaticResource Subheading}"/>
+                    <Entry Text="{Binding UserName}" Placeholder="Nama"/>
+                    <Entry Text="{Binding UserCity}" Placeholder="Kota"/>
+                    <Button Text="Simpan" Style="{StaticResource BtnPrimary}" Command="{Binding SaveProfileCommand}"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <Button Text="Edit profil" Style="{StaticResource BtnOutline}" HeightRequest="48" Clicked="OnEditClicked"/>
+
+            <!-- Akses staff -->
+            <VerticalStackLayout Spacing="10" IsVisible="{Binding IsStaff}">
+                <Label Text="AKSES ORGANIZER" Style="{StaticResource Eyebrow}"/>
+                <Button Text="Profil Event Organizer" Style="{StaticResource BtnDark}" HeightRequest="48"
+                        Command="{Binding GoToEoProfileCommand}"/>
+                <Button Text="Kelola Tiket Event" Style="{StaticResource BtnPrimary}" HeightRequest="48"
+                        Command="{Binding GoToManageTicketsCommand}"/>
+            </VerticalStackLayout>
+
+            <Button Text="Keluar" Style="{StaticResource BtnGhost}" HeightRequest="48"
+                    TextColor="{StaticResource DangerColor}" Command="{Binding LogoutCommand}"/>
+
+            <Border Style="{StaticResource CardFlatBorder}" Margin="0,20,0,0">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="GIGRADAR v1.0" FontFamily="SpaceGroteskBold" FontSize="14"
+                           TextColor="{StaticResource PrimaryColor}"/>
+                    <Label Text="Menghubungkan skena, menemukan suara lokal." Style="{StaticResource Body}" FontSize="12"/>
+                    <Label Text="Backend ASP.NET Core + SQLite · Frontend .NET MAUI" Style="{StaticResource Meta}"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
