@@ -38,16 +38,22 @@ class StorageRepository {
     if (!existingUsers) {
       this.setItem(KEYS.USERS, INITIAL_USERS);
     } else {
-      // Ensure existing users have their corresponding password synced
+      // Ensure existing users have their corresponding password and role synced
       let updated = false;
       const merged = existingUsers.map(u => {
-        const init = INITIAL_USERS.find(iu => iu.userId === u.userId);
-        if (init && !u.password) {
+        const init = INITIAL_USERS.find(iu => iu.userId === u.userId || iu.email.toLowerCase() === u.email.toLowerCase());
+        if (init && (!u.password || u.password !== init.password)) {
           updated = true;
           return { ...u, password: init.password };
         }
         return u;
       });
+      for (const initUser of INITIAL_USERS) {
+        if (!merged.some(u => u.email.toLowerCase() === initUser.email.toLowerCase())) {
+          merged.push(initUser);
+          updated = true;
+        }
+      }
       if (updated) this.setItem(KEYS.USERS, merged);
     }
     if (!localStorage.getItem(KEYS.EVENTS)) {

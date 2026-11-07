@@ -223,8 +223,7 @@ const server = http.createServer((req, res) => {
           sendJson(401, { success: false, message: 'Email tidak ditemukan di sistem.' });
           return;
         }
-        const accepted = ['password123', 'admin123', 'eo123', 'artist123', 'user123'];
-        if (password && user.password && password !== user.password && !accepted.includes(password)) {
+        if (!password || (user.password && password !== user.password)) {
           sendJson(401, { success: false, message: 'Kata sandi tidak sesuai.' });
           return;
         }

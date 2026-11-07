@@ -50,7 +50,7 @@ class NativeBridgeService {
     }
 
     // 2. Try Browser Geolocation API
-    if ('geolocation' in navigator) {
+    if (typeof navigator !== 'undefined' && 'geolocation' in navigator) {
       return new Promise((resolve) => {
         navigator.geolocation.getCurrentPosition(
           (pos) => {
@@ -63,14 +63,29 @@ class NativeBridgeService {
             });
           },
           (err) => {
-            console.warn('Browser geolocation denied or error:', err.message);
-            // Jakarta Music Scene fallback (Blok M / TIM)
-            resolve({
-              coords: { latitude: -6.2297, longitude: 106.8184 },
-              source: 'fallback',
-            });
+            console.warn('Browser high-accuracy geolocation failed, trying standard accuracy:', err.message);
+            // Try secondary attempt with normal accuracy (vital for desktop browsers/laptops)
+            navigator.geolocation.getCurrentPosition(
+              (pos2) => {
+                resolve({
+                  coords: {
+                    latitude: pos2.coords.latitude,
+                    longitude: pos2.coords.longitude,
+                  },
+                  source: 'browser',
+                });
+              },
+              (err2) => {
+                console.warn('Browser geolocation fallback failed:', err2.message);
+                resolve({
+                  coords: { latitude: -6.2297, longitude: 106.8184 },
+                  source: 'fallback',
+                });
+              },
+              { timeout: 8000, enableHighAccuracy: false, maximumAge: 60000 }
+            );
           },
-          { timeout: 7000, enableHighAccuracy: true }
+          { timeout: 5000, enableHighAccuracy: true, maximumAge: 10000 }
         );
       });
     }

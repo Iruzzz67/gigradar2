@@ -1,5 +1,5 @@
 import React from 'react';
-import { Radio, MapPin, RefreshCw, Shield, UserCircle2, Mic2, CalendarDays, Smartphone, Monitor, LogOut } from 'lucide-react';
+import { Radio, MapPin, RefreshCw, Shield, UserCircle2, Mic2, CalendarDays, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useLocation } from '../../context/LocationContext';
 import { Role } from '../../types';
@@ -8,19 +8,13 @@ interface HeaderProps {
   onOpenProfile?: () => void;
   activeTab?: string;
   setActiveTab?: (tab: string) => void;
-  isPhoneFrame?: boolean;
-  onTogglePhoneFrame?: () => void;
-  isInsidePhoneFrame?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   onOpenProfile,
-  isPhoneFrame,
-  onTogglePhoneFrame,
-  isInsidePhoneFrame = false,
 }) => {
   const { currentUser, role, logout } = useAuth();
-  const { cityName, permissionStatus, refreshLocation } = useLocation();
+  const { cityName, permissionStatus, setIsLocationModalOpen } = useLocation();
 
   const roleIcons: Record<Role, React.ReactNode> = {
     User: <UserCircle2 className="w-3.5 h-3.5 text-zinc-400" />,
@@ -53,45 +47,25 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Location Pill */}
-        {!isInsidePhoneFrame && (
-          <button
-            onClick={refreshLocation}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#18181b] border border-[#27272a] text-xs text-zinc-300 hover:border-zinc-600 transition-colors cursor-pointer group"
-            title="Klik untuk memperbarui GPS"
-          >
-            <MapPin className="w-3.5 h-3.5 text-[#b7ff00] group-hover:scale-110 transition-transform" />
-            <span className="font-medium truncate max-w-[120px]">{cityName}</span>
-            <RefreshCw
-              className={`w-3 h-3 text-zinc-500 group-hover:text-zinc-300 ${
-                permissionStatus === 'requesting' ? 'animate-spin' : ''
-              }`}
-            />
-          </button>
-        )}
+        {/* Location Pill (Automatically responsive: hidden on small screens, visible on tablet/desktop) */}
+        <button
+          onClick={() => setIsLocationModalOpen(true)}
+          className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#18181b] border border-[#27272a] text-xs text-zinc-300 hover:border-[#b7ff00]/50 transition-colors cursor-pointer group"
+          title="Klik untuk memilih kota atau deteksi GPS"
+        >
+          <MapPin className="w-3.5 h-3.5 text-[#b7ff00] group-hover:scale-110 transition-transform" />
+          <span className="font-medium truncate max-w-[120px]">{cityName}</span>
+          <RefreshCw
+            className={`w-3 h-3 text-zinc-500 group-hover:text-zinc-300 ${
+              permissionStatus === 'requesting' ? 'animate-spin' : ''
+            }`}
+          />
+        </button>
       </div>
 
-      {/* Right Controls: Phone Preview Simulator Toggle & Role Switcher */}
+      {/* Right Controls: Role Badge, Profile Avatar, and Logout */}
       <div className="flex items-center gap-2 sm:gap-3">
-        {/* Android Simulator Frame Toggle */}
-        {onTogglePhoneFrame && !isInsidePhoneFrame && (
-          <button
-            onClick={onTogglePhoneFrame}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-sm ${
-              isPhoneFrame
-                ? 'bg-zinc-800 border-zinc-600 text-white'
-                : 'bg-[#b7ff00]/15 hover:bg-[#b7ff00]/25 text-[#b7ff00] border-[#b7ff00]/40 shadow-[0_0_15px_rgba(183,255,0,0.2)]'
-            }`}
-            title="Lihat simulasi wujud aplikasi saat di-install di HP Android (APK)"
-          >
-            {isPhoneFrame ? <Monitor className="w-3.5 h-3.5" /> : <Smartphone className="w-3.5 h-3.5" />}
-            <span className="hidden md:inline">
-              {isPhoneFrame ? 'Mode Desktop' : '📱 Mode APK Android'}
-            </span>
-          </button>
-        )}
-
-        {/* Current Active Role Badge (Single-session enforcement) */}
+        {/* Current Active Role Badge */}
         <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#111113] border border-[#27272a] text-xs">
           {roleIcons[role]}
           <span className="font-semibold text-white hidden sm:inline">{role}</span>
@@ -116,7 +90,7 @@ export const Header: React.FC<HeaderProps> = ({
           </span>
         </button>
 
-        {/* Explicit Logout Button (Must logout to access other roles) */}
+        {/* Explicit Logout Button */}
         <button
           onClick={logout}
           className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 hover:border-red-500/50 transition-colors cursor-pointer text-xs font-semibold"

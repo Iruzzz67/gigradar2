@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Radio, Lock, Mail, Eye, EyeOff, ArrowRight, UserCheck, Mic2, CalendarDays, Shield, Sparkles, AlertCircle } from 'lucide-react';
+import { Radio, Lock, Mail, Eye, EyeOff, ArrowRight, Shield, AlertCircle } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { useAuth } from '../../context/AuthContext';
 
@@ -24,6 +24,10 @@ export const LoginView: React.FC<LoginViewProps> = ({
       setErrorMessage('Alamat email wajib diisi.');
       return;
     }
+    if (!targetPassword) {
+      setErrorMessage('Kata sandi wajib diisi.');
+      return;
+    }
 
     setErrorMessage('');
     setIsLoading(true);
@@ -33,7 +37,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
       if (res.success) {
         onLoginSuccess();
       } else {
-        setErrorMessage(res.error || 'Email atau password tidak sesuai.');
+        setErrorMessage(res.error || 'Email atau kata sandi tidak sesuai.');
       }
     } catch {
       setErrorMessage('Terjadi kendala saat menyambung ke server.');
@@ -45,12 +49,6 @@ export const LoginView: React.FC<LoginViewProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleLogin(email, password);
-  };
-
-  const handleQuickLogin = (demoEmail: string, demoPass: string) => {
-    setEmail(demoEmail);
-    setPassword(demoPass);
-    handleLogin(demoEmail, demoPass);
   };
 
   return (
@@ -150,117 +148,12 @@ export const LoginView: React.FC<LoginViewProps> = ({
           </Button>
         </form>
 
-        {/* Multi-Account Quick Login Selector */}
-        <div className="pt-4 border-t border-zinc-800 space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-[#b7ff00]" />
-              Pilih Akun Skena untuk Uji Coba:
-            </span>
-            <span className="text-[10px] text-zinc-500 font-mono">1-Klik Masuk</span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            {/* 1. Akun User */}
-            <div
-              onClick={() => handleQuickLogin('user@gigradar.com', 'user123')}
-              className="p-3 rounded-2xl bg-[#18181b] border border-zinc-800/80 hover:border-zinc-600 transition-all cursor-pointer group flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-white group-hover:text-[#b7ff00]">
-                    <UserCheck className="w-3.5 h-3.5 text-sky-400" />
-                    <span>Akun User</span>
-                  </div>
-                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-sky-950 text-sky-400 border border-sky-800">
-                    Penikmat
-                  </span>
-                </div>
-                <p className="text-[11px] text-zinc-400">user@gigradar.com</p>
-                <p className="text-[10px] text-zinc-500 mt-0.5">Explore radar, beli tiket & gigs favorit.</p>
-              </div>
-              <div className="mt-2 text-right">
-                <span className="text-[10px] font-bold text-sky-400 group-hover:underline">Masuk sebagai User →</span>
-              </div>
-            </div>
-
-            {/* 2. Akun Artist */}
-            <div
-              onClick={() => handleQuickLogin('artist@gigradar.com', 'artist123')}
-              className="p-3 rounded-2xl bg-[#18181b] border border-zinc-800/80 hover:border-zinc-600 transition-all cursor-pointer group flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-white group-hover:text-fuchsia-400">
-                    <Mic2 className="w-3.5 h-3.5 text-fuchsia-400" />
-                    <span>Akun Artist</span>
-                  </div>
-                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-fuchsia-950 text-fuchsia-400 border border-fuchsia-800">
-                    Musisi
-                  </span>
-                </div>
-                <p className="text-[11px] text-zinc-400">artist@gigradar.com</p>
-                <p className="text-[10px] text-zinc-500 mt-0.5">Kelola band Hollow Men, lagu & feed.</p>
-              </div>
-              <div className="mt-2 text-right">
-                <span className="text-[10px] font-bold text-fuchsia-400 group-hover:underline">Masuk sebagai Artist →</span>
-              </div>
-            </div>
-
-            {/* 3. Akun EO */}
-            <div
-              onClick={() => handleQuickLogin('eo@gigradar.com', 'eo123')}
-              className="p-3 rounded-2xl bg-[#18181b] border border-zinc-800/80 hover:border-zinc-600 transition-all cursor-pointer group flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-white group-hover:text-orange-400">
-                    <CalendarDays className="w-3.5 h-3.5 text-orange-400" />
-                    <span>Akun EO</span>
-                  </div>
-                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-orange-950 text-orange-400 border border-orange-800">
-                    Organizer
-                  </span>
-                </div>
-                <p className="text-[11px] text-zinc-400">eo@gigradar.com</p>
-                <p className="text-[10px] text-zinc-500 mt-0.5">Buat event, kelola tiket & validator gate.</p>
-              </div>
-              <div className="mt-2 text-right">
-                <span className="text-[10px] font-bold text-orange-400 group-hover:underline">Masuk sebagai EO →</span>
-              </div>
-            </div>
-
-            {/* 4. Akun Admin (Developer & Internal Perusahaan) */}
-            <div
-              onClick={() => handleQuickLogin('admin@gigradar.com', 'admin123')}
-              className="p-3 rounded-2xl bg-[#18181b] border border-zinc-800/80 hover:border-zinc-600 transition-all cursor-pointer group flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-white group-hover:text-[#b7ff00]">
-                    <Shield className="w-3.5 h-3.5 text-[#b7ff00]" />
-                    <span>Admin Perusahaan</span>
-                  </div>
-                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#b7ff00]/10 text-[#b7ff00] border border-[#b7ff00]/30">
-                    Internal
-                  </span>
-                </div>
-                <p className="text-[11px] text-zinc-400">admin@gigradar.com</p>
-                <p className="text-[10px] text-zinc-500 mt-0.5">Developer & governance verifikasi role.</p>
-              </div>
-              <div className="mt-2 text-right">
-                <span className="text-[10px] font-bold text-[#b7ff00] group-hover:underline">Masuk Portal Admin →</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Security Policy Reminder */}
-        <div className="p-3 rounded-xl bg-zinc-900/80 border border-zinc-800 text-[11px] text-zinc-400 flex items-start gap-2">
-          <Shield className="w-4 h-4 text-zinc-400 shrink-0 mt-0.5" />
-          <span>
-            <strong>Hak Akses Admin:</strong> Akun Admin dikhususkan bagi Developer & Tim Internal Perusahaan. Pengguna umum dapat mendaftar sebagai User, Musisi (Artist), atau Penyelenggara (EO).
-          </span>
+        {/* Security & Access Information */}
+        <div className="p-3.5 rounded-2xl bg-[#18181b]/80 border border-zinc-800 text-[11px] text-zinc-400 flex items-start gap-2.5">
+          <Shield className="w-4 h-4 text-[#b7ff00] shrink-0 mt-0.5" />
+          <p className="leading-relaxed">
+            Masuk dengan kredensial email dan kata sandi akun Anda. Hak akses dan antarmuka akan otomatis disesuaikan berdasarkan peran akun Anda (<strong>User</strong>, <strong>Artist</strong>, <strong>EO</strong>, atau <strong>Admin</strong>).
+          </p>
         </div>
 
       </div>

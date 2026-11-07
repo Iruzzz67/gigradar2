@@ -52,9 +52,11 @@ public static class TicketSchemaBootstrap
 
             SeedTicketTypesIfEmpty(conn);
             SetDemoTicketLink(conn);
+            SeedAdminUserIfMissing(conn);
             SeedEoUserIfMissing(conn);
             EnsureArtistSchema(conn);
             SeedArtistDemo(conn);
+            SeedRegularUserIfMissing(conn);
         }
         finally
         {
@@ -90,6 +92,54 @@ public static class TicketSchemaBootstrap
             UPDATE Events SET TicketLink = 'https://www.loket.com/underground-indie-night'
             WHERE EventId = 3 AND (TicketLink IS NULL OR TicketLink = '');
             """);
+    }
+
+    private static void SeedAdminUserIfMissing(DbConnection conn)
+    {
+        using var findCmd = conn.CreateCommand();
+        findCmd.CommandText = "SELECT UserId FROM Users WHERE Email = 'admin@gigradar.com';";
+        var result = findCmd.ExecuteScalar();
+        if (result == null)
+        {
+            using var insertCmd = conn.CreateCommand();
+            insertCmd.CommandText = """
+                INSERT INTO Users (Name, Email, PasswordHash, Role, RoleStatus, City, Latitude, Longitude, PhotoUrl, CreatedAt)
+                VALUES (@Name, @Email, @PasswordHash, @Role, @RoleStatus, @City, 0, 0, '', @CreatedAt);
+                """;
+            var p = insertCmd.Parameters;
+            p.Add(CreateParameter(conn, "@Name", "Admin Governance"));
+            p.Add(CreateParameter(conn, "@Email", "admin@gigradar.com"));
+            p.Add(CreateParameter(conn, "@PasswordHash", BCrypt.Net.BCrypt.HashPassword("admin123")));
+            p.Add(CreateParameter(conn, "@Role", "Admin"));
+            p.Add(CreateParameter(conn, "@RoleStatus", "Approved"));
+            p.Add(CreateParameter(conn, "@City", "Jakarta"));
+            p.Add(CreateParameter(conn, "@CreatedAt", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss")));
+            insertCmd.ExecuteNonQuery();
+        }
+    }
+
+    private static void SeedRegularUserIfMissing(DbConnection conn)
+    {
+        using var findCmd = conn.CreateCommand();
+        findCmd.CommandText = "SELECT UserId FROM Users WHERE Email = 'user@gigradar.com';";
+        var result = findCmd.ExecuteScalar();
+        if (result == null)
+        {
+            using var insertCmd = conn.CreateCommand();
+            insertCmd.CommandText = """
+                INSERT INTO Users (Name, Email, PasswordHash, Role, RoleStatus, City, Latitude, Longitude, PhotoUrl, CreatedAt)
+                VALUES (@Name, @Email, @PasswordHash, @Role, @RoleStatus, @City, 0, 0, '', @CreatedAt);
+                """;
+            var p = insertCmd.Parameters;
+            p.Add(CreateParameter(conn, "@Name", "Dimas Wicaksono"));
+            p.Add(CreateParameter(conn, "@Email", "user@gigradar.com"));
+            p.Add(CreateParameter(conn, "@PasswordHash", BCrypt.Net.BCrypt.HashPassword("user123")));
+            p.Add(CreateParameter(conn, "@Role", "User"));
+            p.Add(CreateParameter(conn, "@RoleStatus", "None"));
+            p.Add(CreateParameter(conn, "@City", "Jakarta"));
+            p.Add(CreateParameter(conn, "@CreatedAt", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss")));
+            insertCmd.ExecuteNonQuery();
+        }
     }
 
     /// <summary>

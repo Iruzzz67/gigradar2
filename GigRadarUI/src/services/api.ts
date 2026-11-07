@@ -1,13 +1,23 @@
 import { Event, Artist, Venue, Genre, Ticket, User, RoleRequest } from '../types';
 import { storage } from './storage';
 
-export const API_BASE_URL = 'http://localhost:5555/api';
+const defaultLocalUrl =
+  typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? `http://${window.location.hostname}:5555/api`
+    : '';
+
+export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || defaultLocalUrl;
 
 class ApiClient {
   private backendAvailable: boolean = false;
   private hasCheckedBackend: boolean = false;
 
   async checkBackendHealth(): Promise<boolean> {
+    if (!API_BASE_URL) {
+      this.backendAvailable = false;
+      this.hasCheckedBackend = true;
+      return false;
+    }
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 1200);
@@ -31,22 +41,24 @@ class ApiClient {
     const trimmedPw = (password || '').trim();
 
     // 1. Try backend API if available
-    try {
-      const res = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: trimmedEmail, password: trimmedPw }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success && data.user) {
-          storage.setCurrentUser(data.user);
-          storage.setToken(data.token);
-          return { success: true, user: data.user, token: data.token };
+    if (this.backendAvailable && API_BASE_URL) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: trimmedEmail, password: trimmedPw }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.user) {
+            storage.setCurrentUser(data.user);
+            storage.setToken(data.token);
+            return { success: true, user: data.user, token: data.token };
+          }
         }
+      } catch {
+        // Backend offline fallback to storage repository
       }
-    } catch {
-      // Backend offline fallback to storage repository
     }
 
     // 2. Storage repository fallback
@@ -56,9 +68,12 @@ class ApiClient {
       return { success: false, error: 'Email belum terdaftar di GigRadar.' };
     }
 
-    // Check password: match user password or universal demo password
-    const acceptedDemoPasswords = ['password123', 'admin123', 'eo123', 'artist123', 'user123'];
-    if (trimmedPw && user.password && trimmedPw !== user.password && !acceptedDemoPasswords.includes(trimmedPw)) {
+    if (!trimmedPw) {
+      return { success: false, error: 'Kata sandi wajib diisi.' };
+    }
+
+    // Check password: match user password
+    if (user.password && trimmedPw !== user.password) {
       return { success: false, error: 'Kata sandi tidak sesuai. Silakan periksa kembali.' };
     }
 

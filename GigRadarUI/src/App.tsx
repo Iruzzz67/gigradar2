@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { LocationProvider } from './context/LocationContext';
+import { LocationProvider, useLocation } from './context/LocationContext';
 import { Event, Artist, Venue, Ticket, RoleRequest, User } from './types';
 import { storage } from './services/storage';
 
@@ -25,9 +25,11 @@ import { ArtistDetailModal } from './components/artist/ArtistDetailModal';
 import { GateValidatorModal } from './components/ticket/GateValidatorModal';
 import { CreateEventModal } from './components/forms/CreateEventModal';
 import { RoleRequestModal } from './components/forms/RoleRequestModal';
+import { LocationModal } from './components/location/LocationModal';
 
 const MainAppContent: React.FC = () => {
   const { currentUser, role, logout } = useAuth();
+  const { isLocationModalOpen, setIsLocationModalOpen } = useLocation();
 
   // Navigation tab state
   const [activeTab, setActiveTab] = useState<string>('discover');
@@ -300,6 +302,11 @@ const MainAppContent: React.FC = () => {
           setIsRoleRequestOpen(false);
           refreshAllData();
         }}
+      />
+
+      <LocationModal
+        isOpen={isLocationModalOpen}
+        onClose={() => setIsLocationModalOpen(false)}
       />
     </AppShell>
   );

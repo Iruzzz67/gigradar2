@@ -50,11 +50,12 @@ namespace GigRadarApi.Data
                 .HasIndex(f => new { f.UserId, f.EventId })
                 .IsUnique();
 
-            // Seed Admin, EO & Artist User
+            // Seed Admin, EO, Artist & Regular User
             modelBuilder.Entity<User>().HasData(
-                new User { UserId = 1, Name = "Admin", Email = "admin@gigradar.com", PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"), Role = "Admin", City = "Jakarta" },
-                new User { UserId = 2, Name = "Event Organizer", Email = "eo@gigradar.com", PasswordHash = BCrypt.Net.BCrypt.HashPassword("eo123"), Role = "EO", City = "Jakarta" },
-                new User { UserId = 3, Name = "Hollow Men", Email = "artist@gigradar.com", PasswordHash = BCrypt.Net.BCrypt.HashPassword("artist123"), Role = "Artist", City = "Jakarta" }
+                new User { UserId = 1, Name = "Admin Governance", Email = "admin@gigradar.com", PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"), Role = "Admin", RoleStatus = "Approved", City = "Jakarta" },
+                new User { UserId = 2, Name = "Koloni Gigs Organizer", Email = "eo@gigradar.com", PasswordHash = BCrypt.Net.BCrypt.HashPassword("eo123"), Role = "EO", RoleStatus = "Approved", City = "Jakarta" },
+                new User { UserId = 3, Name = "Hollow Men", Email = "artist@gigradar.com", PasswordHash = BCrypt.Net.BCrypt.HashPassword("artist123"), Role = "Artist", RoleStatus = "Approved", City = "Jakarta" },
+                new User { UserId = 4, Name = "Dimas Wicaksono", Email = "user@gigradar.com", PasswordHash = BCrypt.Net.BCrypt.HashPassword("user123"), Role = "User", RoleStatus = "None", City = "Jakarta" }
             );
 
             // Seed Genres

@@ -19,7 +19,7 @@ export const RadarScreen: React.FC<RadarScreenProps> = ({
   onSelectEvent,
   onToggleFavorite,
 }) => {
-  const { cityName, permissionStatus, refreshLocation } = useLocation();
+  const { cityName, permissionStatus, setIsLocationModalOpen } = useLocation();
 
   const [renderMode, setRenderMode] = useState<'3d' | '2d' | 'list'>('2d');
   const [maxRangeKm, setMaxRangeKm] = useState<number>(25);
@@ -53,15 +53,22 @@ export const RadarScreen: React.FC<RadarScreenProps> = ({
           <h1 className="font-display font-black text-2xl sm:text-3xl text-white mt-0.5">
             Peta Spasial Gigs
           </h1>
-          <p className="text-xs sm:text-sm text-zinc-400 mt-0.5 flex items-center gap-1.5">
+          <p className="text-xs sm:text-sm text-zinc-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
             <MapPin className="w-3.5 h-3.5 text-zinc-500" />
-            Pusat koordinat: <strong className="text-white">{cityName}</strong>
+            Pusat koordinat:{' '}
             <button
-              onClick={refreshLocation}
+              onClick={() => setIsLocationModalOpen(true)}
+              className="text-white font-bold hover:text-[#b7ff00] underline decoration-dotted transition-colors cursor-pointer"
+              title="Klik untuk memilih kota atau deteksi GPS"
+            >
+              {cityName}
+            </button>
+            <button
+              onClick={() => setIsLocationModalOpen(true)}
               className="text-xs text-[#b7ff00] hover:underline ml-2 flex items-center gap-1 cursor-pointer"
             >
               <RefreshCw className={`w-3 h-3 ${permissionStatus === 'requesting' ? 'animate-spin' : ''}`} />
-              Segarkan GPS
+              Ganti / Deteksi Kota
             </button>
           </p>
         </div>
