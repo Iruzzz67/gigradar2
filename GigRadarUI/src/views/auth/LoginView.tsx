@@ -148,6 +148,104 @@ export const LoginView: React.FC<LoginViewProps> = ({
           </Button>
         </form>
 
+        {/* Quick Demo Access (§28 Demo Accounts with The Jeblogs & FSTVLST) */}
+        <div className="space-y-2.5 pt-2 border-t border-[#27272a]">
+          <div className="flex items-center justify-between text-xs text-zinc-400">
+            <span className="font-semibold text-zinc-300">Pilih Akun Demo untuk Masuk Cepat:</span>
+            <span className="text-[10px] font-mono text-[#b7ff00]">1-Klik Masuk</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            {/* The Jeblogs (Band Artist) */}
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('jeblogs@gigradar.com');
+                setPassword('artist123');
+                handleLogin('jeblogs@gigradar.com', 'artist123');
+              }}
+              className="p-2.5 rounded-xl bg-[#18181b] hover:bg-[#202024] border border-[#27272a] hover:border-[#b7ff00]/60 transition-all text-left flex items-center gap-2.5 cursor-pointer group"
+            >
+              <div className="w-8 h-8 rounded-lg bg-orange-950/60 text-orange-400 flex items-center justify-center font-bold shrink-0 ring-1 ring-orange-500/30 group-hover:scale-105 transition-transform">
+                🎸
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between">
+                  <p className="font-bold text-white group-hover:text-[#b7ff00] transition-colors truncate">The Jeblogs</p>
+                  <span className="text-[9px] font-mono px-1 rounded bg-[#b7ff00]/15 text-[#b7ff00]">ARTIST</span>
+                </div>
+                <p className="text-[11px] text-zinc-400 truncate">jeblogs@gigradar.com</p>
+              </div>
+            </button>
+
+            {/* FSTVLST (Band Artist) */}
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('fstvlst@gigradar.com');
+                setPassword('artist123');
+                handleLogin('fstvlst@gigradar.com', 'artist123');
+              }}
+              className="p-2.5 rounded-xl bg-[#18181b] hover:bg-[#202024] border border-[#27272a] hover:border-[#b7ff00]/60 transition-all text-left flex items-center gap-2.5 cursor-pointer group"
+            >
+              <div className="w-8 h-8 rounded-lg bg-sky-950/60 text-sky-400 flex items-center justify-center font-bold shrink-0 ring-1 ring-sky-500/30 group-hover:scale-105 transition-transform">
+                🎨
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between">
+                  <p className="font-bold text-white group-hover:text-[#b7ff00] transition-colors truncate">FSTVLST</p>
+                  <span className="text-[9px] font-mono px-1 rounded bg-[#b7ff00]/15 text-[#b7ff00]">ARTIST</span>
+                </div>
+                <p className="text-[11px] text-zinc-400 truncate">fstvlst@gigradar.com</p>
+              </div>
+            </button>
+
+            {/* EO Koloni Gigs */}
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('eo@gigradar.com');
+                setPassword('eo123');
+                handleLogin('eo@gigradar.com', 'eo123');
+              }}
+              className="p-2.5 rounded-xl bg-[#18181b] hover:bg-[#202024] border border-[#27272a] hover:border-[#b7ff00]/60 transition-all text-left flex items-center gap-2.5 cursor-pointer group"
+            >
+              <div className="w-8 h-8 rounded-lg bg-emerald-950/60 text-emerald-400 flex items-center justify-center font-bold shrink-0 ring-1 ring-emerald-500/30 group-hover:scale-105 transition-transform">
+                🏢
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between">
+                  <p className="font-bold text-white group-hover:text-[#b7ff00] transition-colors truncate">Koloni Gigs</p>
+                  <span className="text-[9px] font-mono px-1 rounded bg-emerald-500/15 text-emerald-400">EO</span>
+                </div>
+                <p className="text-[11px] text-zinc-400 truncate">eo@gigradar.com</p>
+              </div>
+            </button>
+
+            {/* Regular User Dimas */}
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('user@gigradar.com');
+                setPassword('user123');
+                handleLogin('user@gigradar.com', 'user123');
+              }}
+              className="p-2.5 rounded-xl bg-[#18181b] hover:bg-[#202024] border border-[#27272a] hover:border-[#b7ff00]/60 transition-all text-left flex items-center gap-2.5 cursor-pointer group"
+            >
+              <div className="w-8 h-8 rounded-lg bg-purple-950/60 text-purple-400 flex items-center justify-center font-bold shrink-0 ring-1 ring-purple-500/30 group-hover:scale-105 transition-transform">
+                👤
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between">
+                  <p className="font-bold text-white group-hover:text-[#b7ff00] transition-colors truncate">Dimas W.</p>
+                  <span className="text-[9px] font-mono px-1 rounded bg-purple-500/15 text-purple-400">USER</span>
+                </div>
+                <p className="text-[11px] text-zinc-400 truncate">user@gigradar.com</p>
+              </div>
+            </button>
+          </div>
+        </div>
+
         {/* Security & Access Information */}
         <div className="p-3.5 rounded-2xl bg-[#18181b]/80 border border-zinc-800 text-[11px] text-zinc-400 flex items-start gap-2.5">
           <Shield className="w-4 h-4 text-[#b7ff00] shrink-0 mt-0.5" />

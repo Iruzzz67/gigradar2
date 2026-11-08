@@ -88,8 +88,11 @@ export interface Artist {
   userId?: number;
   name: string;
   bio: string;
+  history?: string;
   photoUrl: string;
   coverUrl: string;
+  logoUrl?: string;
+  spotifyEmbedUrl?: string;
   genre: string;
   city: string;
   socialLinks: string;

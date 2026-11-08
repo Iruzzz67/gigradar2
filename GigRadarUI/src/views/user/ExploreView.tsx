@@ -11,6 +11,7 @@ export interface ExploreViewProps {
   events: Event[];
   artists: Artist[];
   venues: Venue[];
+  initialCategory?: 'events' | 'artists' | 'venues';
   onSelectEvent: (event: Event) => void;
   onSelectArtist: (artist: Artist) => void;
   onToggleFavorite: (eventId: number) => void;
@@ -21,35 +22,43 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
   events,
   artists,
   venues,
+  initialCategory = 'events',
   onSelectEvent,
   onSelectArtist,
   onToggleFavorite,
   onToggleFollow,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState<'events' | 'artists' | 'venues'>('events');
+  const [activeCategory, setActiveCategory] = useState<'events' | 'artists' | 'venues'>(initialCategory);
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [maxDistance, setMaxDistance] = useState<number>(50);
 
   const genres = storage.getGenres();
+  const actualArtists = artists && artists.length > 0 ? artists : storage.getArtists();
 
   // Filtered Events
   const filteredEvents = events.filter((e) => {
+    const q = searchQuery.toLowerCase();
     const matchSearch =
-      e.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.venue?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.genre?.name.toLowerCase().includes(searchQuery.toLowerCase());
+      !q ||
+      e.name.toLowerCase().includes(q) ||
+      e.venue?.name.toLowerCase().includes(q) ||
+      e.genre?.name.toLowerCase().includes(q) ||
+      (e.artists && e.artists.some(a => a.name.toLowerCase().includes(q)));
     const matchGenre = !selectedGenre || e.genre?.name === selectedGenre;
     const matchDist = (e.distanceKm ?? 10) <= maxDistance;
     return matchSearch && matchGenre && matchDist;
   });
 
   // Filtered Artists
-  const filteredArtists = artists.filter((a) => {
+  const filteredArtists = actualArtists.filter((a) => {
+    const q = searchQuery.toLowerCase();
     const matchSearch =
-      a.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.genre.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.city.toLowerCase().includes(searchQuery.toLowerCase());
+      !q ||
+      a.name.toLowerCase().includes(q) ||
+      a.genre.toLowerCase().includes(q) ||
+      a.city.toLowerCase().includes(q) ||
+      (a.tracks && a.tracks.some(t => t.title.toLowerCase().includes(q)));
     const matchGenre = !selectedGenre || a.genre.toLowerCase() === selectedGenre.toLowerCase();
     return matchSearch && matchGenre;
   });
@@ -158,7 +167,7 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
 
       {/* CATEGORY: EVENTS */}
       {activeCategory === 'events' && (
-        <div>
+        <div className="space-y-8">
           {filteredEvents.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
               {filteredEvents.map((evt) => (
@@ -182,6 +191,35 @@ export const ExploreView: React.FC<ExploreViewProps> = ({
               }}
             />
           )}
+
+          {/* Quick Band & Musisi Section inside Explore */}
+          <div className="pt-8 border-t border-[#27272a] space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-display font-bold text-lg text-white flex items-center gap-2">
+                  <Radio className="w-5 h-5 text-[#b7ff00]" />
+                  Band & Musisi Skena ({filteredArtists.length})
+                </h3>
+                <p className="text-xs text-zinc-400 mt-0.5">Musisi dan band independen yang sedang aktif & hype</p>
+              </div>
+              <button
+                onClick={() => setActiveCategory('artists')}
+                className="text-xs font-mono font-bold text-[#b7ff00] hover:underline cursor-pointer flex items-center gap-1"
+              >
+                Buka Tab Band & Musisi →
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {filteredArtists.slice(0, 6).map((artist) => (
+                <ArtistCard
+                  key={artist.artistId}
+                  artist={artist}
+                  onClick={onSelectArtist}
+                  onToggleFollow={onToggleFollow}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       )}
 

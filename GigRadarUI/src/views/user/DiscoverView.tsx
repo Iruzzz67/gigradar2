@@ -228,28 +228,39 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({
       )}
 
       {/* 5. Artist Discovery Section (Section 19) */}
-      <div className="space-y-4 pt-6 border-t border-[#27272a]">
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-display font-bold text-lg text-white flex items-center gap-2">
-              <Music2 className="w-5 h-5 text-[#b7ff00]" />
-              Band & Musisi Skena
-            </h3>
-            <p className="text-xs text-zinc-400 mt-0.5">Dengarkan trek preview dan ikuti rilisan terbaru mereka</p>
-          </div>
-        </div>
+      {(() => {
+        const displayArtists = artists && artists.length > 0 ? artists : storage.getArtists();
+        return (
+          <div className="space-y-4 pt-6 border-t border-[#27272a]">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-display font-bold text-lg text-white flex items-center gap-2">
+                  <Music2 className="w-5 h-5 text-[#b7ff00]" />
+                  Band & Musisi Skena ({displayArtists.length})
+                </h3>
+                <p className="text-xs text-zinc-400 mt-0.5">Dengarkan trek preview otomatis dan ikuti rilisan terbaru mereka</p>
+              </div>
+              <button
+                onClick={onNavigateToExplore}
+                className="text-xs font-mono font-bold text-[#b7ff00] hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                Jelajahi Semua →
+              </button>
+            </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {artists.slice(0, 6).map((artist) => (
-            <ArtistCard
-              key={artist.artistId}
-              artist={artist}
-              onClick={onSelectArtist}
-              onToggleFollow={onToggleFollow}
-            />
-          ))}
-        </div>
-      </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+              {displayArtists.map((artist) => (
+                <ArtistCard
+                  key={artist.artistId}
+                  artist={artist}
+                  onClick={onSelectArtist}
+                  onToggleFollow={onToggleFollow}
+                />
+              ))}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };

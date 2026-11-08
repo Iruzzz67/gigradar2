@@ -196,6 +196,8 @@ public static class TicketSchemaBootstrap
             Execute(conn, "ALTER TABLE Artists ADD COLUMN City TEXT NOT NULL DEFAULT '';");
         if (!artistCols.Contains("CoverUrl"))
             Execute(conn, "ALTER TABLE Artists ADD COLUMN CoverUrl TEXT NOT NULL DEFAULT '';");
+        if (!artistCols.Contains("History"))
+            Execute(conn, "ALTER TABLE Artists ADD COLUMN History TEXT NOT NULL DEFAULT '';");
 
         var trackCols = GetColumns(conn, "AudioTracks");
         if (!trackCols.Contains("CoverUrl"))
@@ -259,92 +261,148 @@ public static class TicketSchemaBootstrap
     }
 
     /// <summary>
-    /// Akun demo Artist (artist@gigradar.com / artist123) + profil & konten demo
-    /// untuk database lama — hanya diisi bila belum ada.
+    /// Akun demo Artist:
+    /// - The Jeblogs (artist@gigradar.com / jeblogs@gigradar.com / artist123) -> ArtistId = 1
+    /// - FSTVLST (fstvlst@gigradar.com / artist123) -> ArtistId = 2
+    /// Beserta profil & konten demo untuk database lama — hanya diisi bila belum ada.
     /// </summary>
     private static void SeedArtistDemo(DbConnection conn)
     {
-        // 1) Pastikan akun user Artist ada
-        var artistUserId = 0;
+        // 1) Pastikan akun user Artist The Jeblogs ada
+        var jeblogsUserId = 0;
         using (var findCmd = conn.CreateCommand())
         {
-            findCmd.CommandText = "SELECT UserId FROM Users WHERE Email = 'artist@gigradar.com';";
+            findCmd.CommandText = "SELECT UserId FROM Users WHERE Email IN ('artist@gigradar.com', 'jeblogs@gigradar.com');";
             var result = findCmd.ExecuteScalar();
             if (result != null)
             {
-                artistUserId = Convert.ToInt32(result);
+                jeblogsUserId = Convert.ToInt32(result);
             }
             else
             {
                 using var insertCmd = conn.CreateCommand();
                 insertCmd.CommandText = """
-                    INSERT INTO Users (Name, Email, PasswordHash, Role, City, Latitude, Longitude, PhotoUrl, CreatedAt)
-                    VALUES (@Name, @Email, @PasswordHash, @Role, @City, 0, 0, '', @CreatedAt);
+                    INSERT INTO Users (Name, Email, PasswordHash, Role, RoleStatus, City, Latitude, Longitude, PhotoUrl, CreatedAt)
+                    VALUES (@Name, @Email, @PasswordHash, @Role, 'Approved', @City, 0, 0, '', @CreatedAt);
                     SELECT last_insert_rowid();
                     """;
                 var p = insertCmd.Parameters;
-                p.Add(CreateParameter(conn, "@Name", "Hollow Men"));
+                p.Add(CreateParameter(conn, "@Name", "The Jeblogs"));
                 p.Add(CreateParameter(conn, "@Email", "artist@gigradar.com"));
                 p.Add(CreateParameter(conn, "@PasswordHash", BCrypt.Net.BCrypt.HashPassword("artist123")));
                 p.Add(CreateParameter(conn, "@Role", "Artist"));
-                p.Add(CreateParameter(conn, "@City", "Jakarta"));
+                p.Add(CreateParameter(conn, "@City", "Klaten"));
                 p.Add(CreateParameter(conn, "@CreatedAt", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss")));
-                artistUserId = Convert.ToInt32(insertCmd.ExecuteScalar());
+                jeblogsUserId = Convert.ToInt32(insertCmd.ExecuteScalar());
             }
         }
 
-        // 2) Hubungkan profil artist (Hollow Men) ke akun tersebut (hanya bila belum terhubung)
-        Execute(conn, $"UPDATE Artists SET UserId = {artistUserId} WHERE ArtistId = 1 AND (UserId IS NULL OR UserId = 0);");
+        // 2) Pastikan akun user Artist FSTVLST ada
+        var fstvlstUserId = 0;
+        using (var findCmd = conn.CreateCommand())
+        {
+            findCmd.CommandText = "SELECT UserId FROM Users WHERE Email = 'fstvlst@gigradar.com';";
+            var result = findCmd.ExecuteScalar();
+            if (result != null)
+            {
+                fstvlstUserId = Convert.ToInt32(result);
+            }
+            else
+            {
+                using var insertCmd = conn.CreateCommand();
+                insertCmd.CommandText = """
+                    INSERT INTO Users (Name, Email, PasswordHash, Role, RoleStatus, City, Latitude, Longitude, PhotoUrl, CreatedAt)
+                    VALUES (@Name, @Email, @PasswordHash, @Role, 'Approved', @City, 0, 0, '', @CreatedAt);
+                    SELECT last_insert_rowid();
+                    """;
+                var p = insertCmd.Parameters;
+                p.Add(CreateParameter(conn, "@Name", "FSTVLST"));
+                p.Add(CreateParameter(conn, "@Email", "fstvlst@gigradar.com"));
+                p.Add(CreateParameter(conn, "@PasswordHash", BCrypt.Net.BCrypt.HashPassword("artist123")));
+                p.Add(CreateParameter(conn, "@Role", "Artist"));
+                p.Add(CreateParameter(conn, "@City", "Yogyakarta"));
+                p.Add(CreateParameter(conn, "@CreatedAt", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss")));
+                fstvlstUserId = Convert.ToInt32(insertCmd.ExecuteScalar());
+            }
+        }
 
-        // 3) Konten demo hanya bila tabel masih kosong
+        // 3) Sinkronkan nama dan profil artis utama ke database
+        Execute(conn, $"""
+            UPDATE Users SET Name = 'The Jeblogs', Role = 'Artist', RoleStatus = 'Approved', City = 'Klaten' WHERE UserId = {jeblogsUserId};
+            UPDATE Users SET Name = 'FSTVLST', Role = 'Artist', RoleStatus = 'Approved', City = 'Yogyakarta' WHERE UserId = {fstvlstUserId};
+            UPDATE Artists SET UserId = {jeblogsUserId}, Name = 'The Jeblogs', Genre = 'Rock', City = 'Klaten' WHERE ArtistId = 1;
+            UPDATE Artists SET UserId = {fstvlstUserId}, Name = 'FSTVLST', Genre = 'Rock', City = 'Yogyakarta' WHERE ArtistId = 2;
+            UPDATE Artists SET Name = 'Dongker', Genre = 'Punk', City = 'Bandung' WHERE ArtistId = 3;
+            UPDATE Artists SET Name = 'Perunggu', Genre = 'Indie', City = 'Jakarta' WHERE ArtistId = 4;
+            UPDATE Artists SET Name = 'Sukatani', Genre = 'Punk', City = 'Purbalingga' WHERE ArtistId = 5;
+            UPDATE Artists SET Name = 'The Adams', Genre = 'Indie', City = 'Jakarta' WHERE ArtistId = 6;
+            INSERT OR IGNORE INTO Artists (ArtistId, Name, Bio, Genre, City, PhotoUrl, CoverUrl, SocialLinks, CreatedAt, History) VALUES
+                (7, 'Lomba Sihir', 'Kolektif pop alternatif Jakarta', 'Pop', 'Jakarta', '', '', '', '2026-01-01 00:00:00', ''),
+                (8, 'Bernadya', 'Solois indie pop melankolis Surabaya', 'Pop', 'Surabaya', '', '', '', '2026-01-01 00:00:00', '');
+        """);
+
+        // 4) Konten demo hanya bila tabel masih kosong
         if (TableIsEmpty(conn, "AudioTracks"))
         {
             Execute(conn, """
                 INSERT INTO "AudioTracks" ("ArtistId", "Title", "AudioUrl", "CoverUrl", "Genre", "DurationSeconds", "ReleaseDate", "CreatedAt") VALUES
-                    (1, 'Static Haze', '', '', 'Shoegaze', 210, '2025-03-14 00:00:00', '2025-03-14 00:00:00'),
-                    (1, 'Midnight Bloom', '', '', 'Shoegaze', 245, '2025-08-02 00:00:00', '2025-08-02 00:00:00'),
-                    (1, 'Afterglow', '', '', 'Dream Pop', 198, '2026-01-20 00:00:00', '2026-01-20 00:00:00');
+                    (1, 'Bersandarlah', '', '', 'Rock', 30, '2023-11-20 00:00:00', '2023-11-20 00:00:00'),
+                    (1, 'Menari Resah', '', '', 'Indie Rock', 30, '2023-11-20 00:00:00', '2023-11-20 00:00:00'),
+                    (1, 'Atas Nama', '', '', 'Rock', 30, '2022-08-10 00:00:00', '2022-08-10 00:00:00'),
+                    (2, 'Menantang Rasi Bintang', '', '', 'Rock', 30, '2014-09-03 00:00:00', '2014-09-03 00:00:00'),
+                    (2, 'Ayunan Kapal', '', '', 'Visual Rock', 30, '2014-09-03 00:00:00', '2014-09-03 00:00:00'),
+                    (2, 'Sireum Hideung', '', '', 'Rock', 30, '2020-06-16 00:00:00', '2020-06-16 00:00:00');
                 """);
         }
         if (TableIsEmpty(conn, "ArtistAlbums"))
         {
             Execute(conn, """
                 INSERT INTO "ArtistAlbums" ("ArtistId", "Title", "CoverUrl", "Description", "ReleaseDate", "CreatedAt") VALUES
-                    (1, 'Pale Light', '', 'Album pertama — 10 lagu shoegaze.', '2026-02-10 00:00:00', '2026-02-10 00:00:00');
+                    (1, 'Sambutlah', '', 'Album penuh perdana berisi 8 nomor katarsis rock.', '2023-11-20 00:00:00', '2023-11-20 00:00:00'),
+                    (2, 'Hits Kitsch', '', 'Album monumental penanda babak baru FSTVLST.', '2014-09-03 00:00:00', '2014-09-03 00:00:00');
                 """);
         }
         if (TableIsEmpty(conn, "ArtistPosts"))
         {
             Execute(conn, """
                 INSERT INTO "ArtistPosts" ("ArtistId", "Title", "Content", "ImageUrl", "IsPublished", "CreatedAt", "UpdatedAt") VALUES
-                    (1, 'Single baru: Afterglow', 'Single terbaru kami ''Afterglow'' sudah bisa didengarkan. Terima kasih yang sudah menunggu! 🌙', '', 1, '2026-01-20 00:00:00', '2026-01-20 00:00:00'),
-                    (1, 'Tampil di Night of Shoegaze', 'Kami akan tampil di Night of Shoegaze bulan September. Siapkan telingamu! 🎸', '', 1, '2026-08-01 00:00:00', '2026-08-01 00:00:00');
+                    (1, 'Koor massal Bersandarlah!', 'Terima kasih untuk seluruh kawan skena yang bernyanyi bersama kami di panggung festival! 🎸', '', 1, '2026-10-15 00:00:00', '2026-10-15 00:00:00'),
+                    (1, 'Menuju Panggung Skena Riuh', 'Sampai jumpa di panggung akbar bersama kawan-kawan FSTVLST bulan ini!', '', 1, '2026-10-18 00:00:00', '2026-10-18 00:00:00'),
+                    (2, 'Almost Rock Barely Art di Panggung!', 'Malam yang magis bersama kawan-kawan festivalist dan The Jeblogs di Yogyakarta! 🤘', '', 1, '2026-10-19 00:00:00', '2026-10-19 00:00:00');
                 """);
         }
         if (TableIsEmpty(conn, "ArtistMembers"))
         {
             Execute(conn, """
                 INSERT INTO "ArtistMembers" ("ArtistId", "Name", "Role", "PhotoUrl", "JoinedAt", "CreatedAt") VALUES
-                    (1, 'Raka', 'Vokal & Gitar', '', '2024-01-15 00:00:00', '2024-01-15 00:00:00'),
-                    (1, 'Bima', 'Gitar', '', '2024-01-15 00:00:00', '2024-01-15 00:00:00'),
-                    (1, 'Sari', 'Bass', '', '2024-03-01 00:00:00', '2024-03-01 00:00:00'),
-                    (1, 'Dimas', 'Drum', '', '2024-05-20 00:00:00', '2024-05-20 00:00:00');
+                    (1, 'Amir M.', 'Vokal', '', '2016-08-17 00:00:00', '2016-08-17 00:00:00'),
+                    (1, 'Valentino Mahoni', 'Gitar', '', '2016-08-17 00:00:00', '2016-08-17 00:00:00'),
+                    (1, 'Febrianto Prima', 'Gitar', '', '2016-08-17 00:00:00', '2016-08-17 00:00:00'),
+                    (1, 'Ryan Ramadhan', 'Bass', '', '2016-08-17 00:00:00', '2016-08-17 00:00:00'),
+                    (1, 'Dani Ardian', 'Drum', '', '2016-08-17 00:00:00', '2016-08-17 00:00:00'),
+                    (2, 'Farid Stevy Asta', 'Vokal / Visual', '', '2011-01-01 00:00:00', '2011-01-01 00:00:00'),
+                    (2, 'Roby Setiawan', 'Gitar', '', '2011-01-01 00:00:00', '2011-01-01 00:00:00'),
+                    (2, 'Fendry Aryo', 'Bass', '', '2011-01-01 00:00:00', '2011-01-01 00:00:00'),
+                    (2, 'Danish Wisnu', 'Drum', '', '2018-05-01 00:00:00', '2018-05-01 00:00:00');
                 """);
         }
         if (TableIsEmpty(conn, "ArtistJourneyItems"))
         {
             Execute(conn, """
                 INSERT INTO "ArtistJourneyItems" ("ArtistId", "Title", "Description", "ImageUrl", "Category", "Date", "CreatedAt") VALUES
-                    (1, 'Band terbentuk', 'Hollow Men terbentuk di garasi Raka, Jakarta Selatan.', '', 'Formation', '2024-01-15 00:00:00', '2024-01-15 00:00:00'),
-                    (1, 'Single pertama', '''Static Haze'' dirilis di platform digital.', '', 'Single', '2025-03-14 00:00:00', '2025-03-14 00:00:00'),
-                    (1, 'Showcase pertama', 'Tampil di showcase underground pertama di Bentara Budaya.', '', 'Gig', '2025-09-05 00:00:00', '2025-09-05 00:00:00'),
-                    (1, 'Album pertama: Pale Light', 'Album perdana dirilis dengan 10 lagu.', '', 'Album', '2026-02-10 00:00:00', '2026-02-10 00:00:00');
+                    (1, 'Band terbentuk di Klaten', 'Bermula dari Karang Taruna Galur Manggala Desa Jeblog.', '', 'Formation', '2016-08-17 00:00:00', '2016-08-17 00:00:00'),
+                    (1, 'Rilis EP perdana', 'Direkam swadaya di balai desa.', '', 'Single', '2018-08-17 00:00:00', '2018-08-17 00:00:00'),
+                    (1, 'Rilis Album Sambutlah', 'Album penuh perdana meledak di panggung independen nasional.', '', 'Album', '2023-11-20 00:00:00', '2023-11-20 00:00:00'),
+                    (2, 'Transformasi dari Jenny', 'Lahir kembali menjadi FSTVLST di kampus ISI Yogyakarta.', '', 'Formation', '2011-01-01 00:00:00', '2011-01-01 00:00:00'),
+                    (2, 'Rilis Hits Kitsch', 'Album seminal yang melahirkan lagu kebangsaan Menantang Rasi Bintang.', '', 'Album', '2014-09-03 00:00:00', '2014-09-03 00:00:00');
                 """);
         }
 
-        // 4) Follower demo (Admin & EO) — hanya bila belum ada
+        // 5) Follower demo (Admin & EO) — hanya bila belum ada
         Execute(conn, "INSERT OR IGNORE INTO Follows (UserId, ArtistId, CreatedAt) VALUES (1, 1, '2026-01-01 00:00:00');");
         Execute(conn, "INSERT OR IGNORE INTO Follows (UserId, ArtistId, CreatedAt) VALUES (2, 1, '2026-01-01 00:00:00');");
+        Execute(conn, "INSERT OR IGNORE INTO Follows (UserId, ArtistId, CreatedAt) VALUES (1, 2, '2026-01-01 00:00:00');");
+        Execute(conn, "INSERT OR IGNORE INTO Follows (UserId, ArtistId, CreatedAt) VALUES (4, 2, '2026-01-01 00:00:00');");
     }
 
     private static bool TableIsEmpty(DbConnection conn, string table)

@@ -2,6 +2,7 @@ import { User, Event, Artist, Venue, Genre, Ticket, RoleRequest, Role } from '..
 import { INITIAL_USERS, INITIAL_EVENTS, INITIAL_ARTISTS, INITIAL_VENUES, INITIAL_GENRES, INITIAL_ROLE_REQUESTS } from './mockData';
 
 const KEYS = {
+  VERSION: 'gigradar_data_version',
   USERS: 'gigradar_users',
   CURRENT_USER: 'gigradar_current_user',
   TOKEN: 'gigradar_jwt_token',
@@ -14,6 +15,8 @@ const KEYS = {
   FAVORITES: 'gigradar_favorites',
   FOLLOWS: 'gigradar_follows',
 };
+
+const CURRENT_DATA_VERSION = 'v7_mp3_real_audio_in_cards';
 
 class StorageRepository {
   private getItem<T>(key: string, fallback: T): T {
@@ -34,8 +37,31 @@ class StorageRepository {
   }
 
   init(): void {
+    const savedVersion = localStorage.getItem(KEYS.VERSION);
+    const isNewVersion = savedVersion !== CURRENT_DATA_VERSION;
+
+    // Check whether current stored artists are invalid or still legacy
+    const storedArtists = this.getItem<Artist[] | null>(KEYS.ARTISTS, null);
+    const needsArtistReset =
+      isNewVersion ||
+      !storedArtists ||
+      storedArtists.length === 0 ||
+      storedArtists.some(a => a.name.toLowerCase().includes('hollow men') || a.name.toLowerCase().includes('concrete beach')) ||
+      !storedArtists.some(a => a.name.toLowerCase().includes('jeblog')) ||
+      !storedArtists.some(a => a.name.toLowerCase().includes('fstvlst')) ||
+      !storedArtists.some(a => a.name.toLowerCase().includes('dongker') && a.tracks?.[0]?.audioUrl === '/audio/dongker-bertaruh-pada-api.mp3');
+
+    if (needsArtistReset) {
+      this.setItem(KEYS.ARTISTS, INITIAL_ARTISTS);
+      this.setItem(KEYS.EVENTS, INITIAL_EVENTS);
+      this.setItem(KEYS.VENUES, INITIAL_VENUES);
+      this.setItem(KEYS.GENRES, INITIAL_GENRES);
+      this.setItem(KEYS.USERS, INITIAL_USERS);
+      localStorage.setItem(KEYS.VERSION, CURRENT_DATA_VERSION);
+    }
+
     const existingUsers = this.getItem<User[] | null>(KEYS.USERS, null);
-    if (!existingUsers) {
+    if (!existingUsers || isNewVersion || needsArtistReset) {
       this.setItem(KEYS.USERS, INITIAL_USERS);
     } else {
       // Ensure existing users have their corresponding password and role synced
@@ -44,7 +70,7 @@ class StorageRepository {
         const init = INITIAL_USERS.find(iu => iu.userId === u.userId || iu.email.toLowerCase() === u.email.toLowerCase());
         if (init && (!u.password || u.password !== init.password)) {
           updated = true;
-          return { ...u, password: init.password };
+          return { ...u, password: init.password, name: init.name, photoUrl: init.photoUrl };
         }
         return u;
       });
@@ -71,7 +97,7 @@ class StorageRepository {
     if (!localStorage.getItem(KEYS.ROLE_REQUESTS)) {
       this.setItem(KEYS.ROLE_REQUESTS, INITIAL_ROLE_REQUESTS);
     }
-    if (!localStorage.getItem(KEYS.TICKETS)) {
+    if (!localStorage.getItem(KEYS.TICKETS) || isNewVersion) {
       // Seed a sample ticket for user
       const sampleTicket: Ticket = {
         ticketId: 101,
@@ -79,14 +105,14 @@ class StorageRepository {
         event: INITIAL_EVENTS[0],
         userId: 4,
         ticketType: 'Regular Gate Pass',
-        price: 45000,
+        price: 60000,
         buyerName: 'Dimas Wicaksono',
         buyerPhone: '081234567890',
         buyerEmail: 'user@gigradar.com',
         buyerDateOfBirth: '2001-05-12',
         qrCode: 'GR-TKT-98234-ACTIVE',
         status: 'Active',
-        purchasedAt: '2026-09-30T10:15:00Z',
+        purchasedAt: '2026-10-01T10:15:00Z',
       };
       this.setItem(KEYS.TICKETS, [sampleTicket]);
     }
@@ -94,7 +120,13 @@ class StorageRepository {
 
   // --- Auth & Session ---
   getCurrentUser(): User | null {
-    return this.getItem<User | null>(KEYS.CURRENT_USER, null);
+    const user = this.getItem<User | null>(KEYS.CURRENT_USER, null);
+    if (user && (user.name === 'Hollow Men' || user.email === 'artist@gigradar.com')) {
+      const jeblogs = INITIAL_USERS.find(u => u.email === 'jeblogs@gigradar.com') || INITIAL_USERS[2];
+      this.setCurrentUser(jeblogs);
+      return jeblogs;
+    }
+    return user;
   }
 
   setCurrentUser(user: User | null): void {
@@ -111,7 +143,12 @@ class StorageRepository {
   }
 
   getUsers(): User[] {
-    return this.getItem<User[]>(KEYS.USERS, INITIAL_USERS);
+    const list = this.getItem<User[]>(KEYS.USERS, INITIAL_USERS);
+    if (!list || list.length === 0 || !list.some(u => u.email.toLowerCase() === 'fstvlst@gigradar.com')) {
+      this.setItem(KEYS.USERS, INITIAL_USERS);
+      return INITIAL_USERS;
+    }
+    return list;
   }
 
   updateUser(updated: User): void {
@@ -125,7 +162,15 @@ class StorageRepository {
 
   // --- Events ---
   getEvents(): Event[] {
-    return this.getItem<Event[]>(KEYS.EVENTS, INITIAL_EVENTS);
+    const list = this.getItem<Event[]>(KEYS.EVENTS, INITIAL_EVENTS);
+    const hasLegacy = list.some(e => e.name.toLowerCase().includes('night of shoegaze') || e.name.toLowerCase().includes('midwest emo fest'));
+    const hasSkenaRiuh = list.some(e => e.name.toLowerCase().includes('skena riuh') || e.name.toLowerCase().includes('jeblogs'));
+
+    if (hasLegacy || !hasSkenaRiuh || list.length < INITIAL_EVENTS.length) {
+      this.setItem(KEYS.EVENTS, INITIAL_EVENTS);
+      return INITIAL_EVENTS;
+    }
+    return list;
   }
 
   getEventById(id: number): Event | undefined {
@@ -157,7 +202,20 @@ class StorageRepository {
 
   // --- Artists ---
   getArtists(): Artist[] {
-    return this.getItem<Artist[]>(KEYS.ARTISTS, INITIAL_ARTISTS);
+    const list = this.getItem<Artist[]>(KEYS.ARTISTS, INITIAL_ARTISTS);
+    const hasLegacy = list.some(a => 
+      a.name.toLowerCase().includes('hollow men') || 
+      a.name.toLowerCase().includes('concrete beach') ||
+      a.name.toLowerCase().includes('static bloom')
+    );
+    const hasJeblogs = list.some(a => a.name.toLowerCase().includes('jeblog'));
+    const hasFstvlst = list.some(a => a.name.toLowerCase().includes('fstvlst'));
+
+    if (hasLegacy || !hasJeblogs || !hasFstvlst || list.length < INITIAL_ARTISTS.length) {
+      this.setItem(KEYS.ARTISTS, INITIAL_ARTISTS);
+      return INITIAL_ARTISTS;
+    }
+    return list;
   }
 
   getArtistById(id: number): Artist | undefined {

@@ -22,6 +22,7 @@ import { AppShell } from './components/layout/AppShell';
 import { EventDetailModal } from './components/event/EventDetailModal';
 import { TicketCheckoutModal } from './components/event/TicketCheckoutModal';
 import { ArtistDetailModal } from './components/artist/ArtistDetailModal';
+import { BottomMusicPlayer } from './components/artist/BottomMusicPlayer';
 import { GateValidatorModal } from './components/ticket/GateValidatorModal';
 import { CreateEventModal } from './components/forms/CreateEventModal';
 import { RoleRequestModal } from './components/forms/RoleRequestModal';
@@ -33,15 +34,16 @@ const MainAppContent: React.FC = () => {
 
   // Navigation tab state
   const [activeTab, setActiveTab] = useState<string>('discover');
+  const [exploreCategory, setExploreCategory] = useState<'events' | 'artists' | 'venues'>('events');
   const [authScreen, setAuthScreen] = useState<'login' | 'register' | 'onboarding'>('login');
 
-  // Domain data
-  const [events, setEvents] = useState<Event[]>([]);
-  const [artists, setArtists] = useState<Artist[]>([]);
-  const [venues, setVenues] = useState<Venue[]>([]);
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [roleRequests, setRoleRequests] = useState<RoleRequest[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
+  // Domain data (initialized directly from storage to eliminate empty-state flicker)
+  const [events, setEvents] = useState<Event[]>(() => storage.getEvents());
+  const [artists, setArtists] = useState<Artist[]>(() => storage.getArtists());
+  const [venues, setVenues] = useState<Venue[]>(() => storage.getVenues());
+  const [tickets, setTickets] = useState<Ticket[]>(() => storage.getAllTickets());
+  const [roleRequests, setRoleRequests] = useState<RoleRequest[]>(() => storage.getRoleRequests());
+  const [users, setUsers] = useState<User[]>(() => storage.getUsers());
 
   // Modals state
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -150,7 +152,11 @@ const MainAppContent: React.FC = () => {
   }
 
   // Active Artist object for Artist role
-  const currentArtist = artists.find((a) => a.userId === currentUser.userId) || artists[0];
+  const currentArtist =
+    artists.find((a) => a.userId === currentUser.userId) ||
+    artists.find((a) => a.name.toLowerCase() === currentUser.name.toLowerCase()) ||
+    artists.find((a) => currentUser.email.toLowerCase().includes(a.name.toLowerCase().replace(/\s+/g, ''))) ||
+    artists[0];
 
   return (
     <AppShell
@@ -170,7 +176,10 @@ const MainAppContent: React.FC = () => {
           onToggleFavorite={handleToggleFavorite}
           onToggleFollow={handleToggleFollow}
           onNavigateToRadar={() => setActiveTab('radar')}
-          onNavigateToExplore={() => setActiveTab('explore')}
+          onNavigateToExplore={() => {
+            setExploreCategory('artists');
+            setActiveTab('explore');
+          }}
         />
       )}
 
@@ -179,6 +188,7 @@ const MainAppContent: React.FC = () => {
           events={events}
           artists={artists}
           venues={venues}
+          initialCategory={exploreCategory}
           onSelectEvent={(e) => setSelectedEvent(e)}
           onSelectArtist={(a) => setSelectedArtist(a)}
           onToggleFavorite={handleToggleFavorite}
@@ -308,6 +318,9 @@ const MainAppContent: React.FC = () => {
         isOpen={isLocationModalOpen}
         onClose={() => setIsLocationModalOpen(false)}
       />
+
+      {/* Global Skena Music Bottom Player */}
+      <BottomMusicPlayer onOpenArtist={(a) => setSelectedArtist(a)} />
     </AppShell>
   );
 };

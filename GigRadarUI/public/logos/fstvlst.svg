@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <radialGradient id="fstvlstBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1f2214"/>
+      <stop offset="100%" stop-color="#0a0c06"/>
+    </radialGradient>
+    <linearGradient id="fstvlstNeon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ccff00"/>
+      <stop offset="100%" stop-color="#a6e22e"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Badge -->
+  <rect x="10" y="10" width="180" height="180" rx="36" fill="url(#fstvlstBg)" stroke="#ccff00" stroke-width="3" stroke-opacity="0.8"/>
+  
+  <!-- Iconic Farid Stevy Equal Sign '=' / FSTVLST II -->
+  <rect x="52" y="44" width="96" height="20" rx="4" fill="url(#fstvlstNeon)"/>
+  <rect x="52" y="74" width="96" height="20" rx="4" fill="url(#fstvlstNeon)"/>
+
+  <!-- Brutalist Typography FSTVLST -->
+  <text x="100" y="132" text-anchor="middle" font-family="'Helvetica Neue', 'Arial Black', sans-serif" font-weight="900" font-size="28" letter-spacing="4" fill="#ffffff">
+    FSTVLST
+  </text>
+
+  <!-- Filosofi / Tagline -->
+  <text x="100" y="153" text-anchor="middle" font-family="'Courier New', monospace" font-weight="700" font-size="8.5" letter-spacing="1.5" fill="#ccff00">
+    ALMOST ROCK • BARELY ART
+  </text>
+  
+  <text x="100" y="171" text-anchor="middle" font-family="'Courier New', monospace" font-weight="600" font-size="7.5" letter-spacing="2" fill="#71717a">
+    YOGYAKARTA
+  </text>
+</svg>

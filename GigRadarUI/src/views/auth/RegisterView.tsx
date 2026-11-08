@@ -103,7 +103,7 @@ export const RegisterView: React.FC<RegisterViewProps> = ({
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="cth: Raka Suryo / Hollow Men / Kolektif Sore"
+                placeholder="cth: Dimas / The Jeblogs / Koloni Gigs"
                 className="w-full pl-10 pr-4 py-3 rounded-xl bg-[#18181b] border border-[#27272a] focus:border-[#b7ff00] text-sm text-white outline-none transition-colors"
               />
             </div>

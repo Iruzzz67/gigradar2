@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <radialGradient id="dongkerBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#221215"/>
+      <stop offset="100%" stop-color="#0a0507"/>
+    </radialGradient>
+    <linearGradient id="dongkerRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#b91c1c"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Badge -->
+  <rect x="10" y="10" width="180" height="180" rx="36" fill="url(#dongkerBg)" stroke="#ef4444" stroke-width="3" stroke-opacity="0.7"/>
+
+  <!-- Balaclava Silhouette Motif with signature eye/breathing holes -->
+  <path d="M72,40 C72,28 128,28 128,40 L132,74 C134,92 126,104 116,108 L116,112 L84,112 L84,108 C74,104 66,92 68,74 Z" 
+        fill="#ffffff" stroke="#ef4444" stroke-width="2"/>
+
+  <!-- 17 signature cutout holes in mask -->
+  <!-- Eye slits -->
+  <ellipse cx="86" cy="56" rx="6" ry="4" fill="#0a0507"/>
+  <ellipse cx="114" cy="56" rx="6" ry="4" fill="#0a0507"/>
+  <!-- Forehead dots (5) -->
+  <circle cx="80" cy="42" r="2.5" fill="#0a0507"/>
+  <circle cx="90" cy="40" r="2.5" fill="#0a0507"/>
+  <circle cx="100" cy="39" r="2.5" fill="#0a0507"/>
+  <circle cx="110" cy="40" r="2.5" fill="#0a0507"/>
+  <circle cx="120" cy="42" r="2.5" fill="#0a0507"/>
+  <!-- Nose/mouth ventilation dots (10) -->
+  <circle cx="100" cy="66" r="2.2" fill="#0a0507"/>
+  <circle cx="94" cy="74" r="2.2" fill="#0a0507"/>
+  <circle cx="106" cy="74" r="2.2" fill="#0a0507"/>
+  <circle cx="88" cy="84" r="2.2" fill="#0a0507"/>
+  <circle cx="96" cy="84" r="2.2" fill="#0a0507"/>
+  <circle cx="104" cy="84" r="2.2" fill="#0a0507"/>
+  <circle cx="112" cy="84" r="2.2" fill="#0a0507"/>
+  <circle cx="92" cy="94" r="2.2" fill="#0a0507"/>
+  <circle cx="100" cy="94" r="2.2" fill="#0a0507"/>
+  <circle cx="108" cy="94" r="2.2" fill="#0a0507"/>
+
+  <!-- Raw Punk Wordmark DONGKER -->
+  <text x="100" y="142" text-anchor="middle" font-family="'Impact', 'Arial Black', sans-serif" font-weight="900" font-size="26" letter-spacing="3" fill="#ffffff">
+    DONGKER
+  </text>
+
+  <!-- Subtitle -->
+  <text x="100" y="162" text-anchor="middle" font-family="'Courier New', monospace" font-weight="800" font-size="9" letter-spacing="2.5" fill="#ef4444">
+    BANDUNG ART PUNK
+  </text>
+  <text x="100" y="176" text-anchor="middle" font-family="sans-serif" font-weight="600" font-size="7.5" letter-spacing="2" fill="#71717a">
+    BERTARUH PADA API
+  </text>
+</svg>

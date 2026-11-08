@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <radialGradient id="bernadyaBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1c1917"/>
+      <stop offset="100%" stop-color="#090808"/>
+    </radialGradient>
+    <linearGradient id="roseSilver" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fda4af"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Badge -->
+  <rect x="10" y="10" width="180" height="180" rx="36" fill="url(#bernadyaBg)" stroke="#fda4af" stroke-width="3" stroke-opacity="0.7"/>
+
+  <!-- Minimalist Poetic Contour (Soundwave / Heartache Arc) -->
+  <path d="M52,80 C70,55 90,55 100,75 C110,95 130,95 148,70" fill="none" stroke="url(#roseSilver)" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="100" cy="50" r="4" fill="#fda4af"/>
+
+  <!-- Minimalist Elegant Lowercase Wordmark "bernadya" -->
+  <text x="100" y="132" text-anchor="middle" font-family="'Helvetica Neue', 'Futura', 'Century Gothic', sans-serif" font-weight="300" font-size="25" letter-spacing="4" fill="#ffffff">
+    bernadya
+  </text>
+
+  <!-- Tagline / Album reference -->
+  <text x="100" y="154" text-anchor="middle" font-family="'Courier New', monospace" font-weight="700" font-size="8.5" letter-spacing="2.5" fill="#fda4af">
+    FOLK POP • JUNI RECORDS
+  </text>
+
+  <text x="100" y="172" text-anchor="middle" font-family="sans-serif" font-weight="600" font-size="7.5" letter-spacing="2" fill="#78716c">
+    SURABAYA • TERLINTAS
+  </text>
+</svg>

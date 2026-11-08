@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <radialGradient id="jeblogsBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#241a20"/>
+      <stop offset="100%" stop-color="#0e0d11"/>
+    </radialGradient>
+    <linearGradient id="jeblogsGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff3b5c"/>
+      <stop offset="100%" stop-color="#ff8e3c"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Badge -->
+  <rect x="10" y="10" width="180" height="180" rx="36" fill="url(#jeblogsBg)" stroke="#ff3b5c" stroke-width="3" stroke-opacity="0.6"/>
+  
+  <!-- Outer dashed ring -->
+  <circle cx="100" cy="100" r="76" fill="none" stroke="#ffffff" stroke-opacity="0.15" stroke-width="2" stroke-dasharray="6,4"/>
+
+  <!-- Iconic Lightning / Pick Motif -->
+  <polygon points="100,32 118,72 104,72 114,98 84,62 98,62" fill="url(#jeblogsGlow)"/>
+
+  <!-- Main Wordmark -->
+  <text x="100" y="125" text-anchor="middle" font-family="'Impact', 'Arial Black', sans-serif" font-weight="900" font-size="22" letter-spacing="2" fill="#ffffff">
+    THE JEBLOGS
+  </text>
+
+  <!-- Tagline / Subtitle -->
+  <rect x="42" y="137" width="116" height="16" rx="4" fill="#ff3b5c" fill-opacity="0.2"/>
+  <text x="100" y="149" text-anchor="middle" font-family="'Trebuchet MS', 'Arial', sans-serif" font-weight="800" font-size="9" letter-spacing="2.5" fill="#ff8e3c">
+    KLATEN • EST 2016
+  </text>
+
+  <!-- Bottom Accent -->
+  <text x="100" y="172" text-anchor="middle" font-family="sans-serif" font-weight="700" font-size="8" letter-spacing="3" fill="#a1a1aa">
+    SAMBUTLAH
+  </text>
+</svg>

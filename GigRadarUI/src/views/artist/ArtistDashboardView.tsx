@@ -20,7 +20,7 @@ export const ArtistDashboardView: React.FC<ArtistDashboardViewProps> = ({
   onUpdateArtist,
   onSelectEvent,
 }) => {
-  const [activeSubTab, setActiveSubTab] = useState<'overview' | 'tracks' | 'albums' | 'posts' | 'journey' | 'members'>('overview');
+  const [activeSubTab, setActiveSubTab] = useState<'overview' | 'history' | 'tracks' | 'albums' | 'posts' | 'journey' | 'members'>('overview');
 
   // Track upload modal
   const [isTrackModalOpen, setIsTrackModalOpen] = useState(false);
@@ -168,10 +168,11 @@ export const ArtistDashboardView: React.FC<ArtistDashboardViewProps> = ({
         </div>
       </div>
 
-      {/* Subtabs: Overview, Tracks, Albums, Posts, Journey, Members */}
+      {/* Subtabs: Overview, History, Tracks, Albums, Posts, Journey, Members */}
       <div className="flex gap-2 border-b border-[#27272a] pb-2 text-xs overflow-x-auto no-scrollbar">
         {[
           { id: 'overview', label: 'Ringkasan Lineup' },
+          { id: 'history', label: 'Sejarah Band' },
           { id: 'tracks', label: `Trek Audio (${artist.tracks?.length || 0})` },
           { id: 'albums', label: `Album (${artist.albums?.length || 0})` },
           { id: 'posts', label: `Kabar Band (${artist.posts?.length || 0})` },
@@ -191,6 +192,29 @@ export const ArtistDashboardView: React.FC<ArtistDashboardViewProps> = ({
           </button>
         ))}
       </div>
+
+      {/* TAB: HISTORY */}
+      {activeSubTab === 'history' && (
+        <div className="p-6 rounded-3xl bg-[#111113] border border-[#27272a] space-y-4">
+          <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+            <div>
+              <h3 className="font-display font-bold text-base text-white">Sejarah & Rekam Jejak Band</h3>
+              <p className="text-xs text-zinc-400 mt-0.5">Kisah perjalanan {artist.name} dari awal terbentuk hingga era panggung saat ini.</p>
+            </div>
+            <span className="text-[10px] font-mono px-2 py-1 rounded bg-[#b7ff00]/15 text-[#b7ff00] border border-[#b7ff00]/30 font-bold">
+              Profil Resmi
+            </span>
+          </div>
+
+          <div className="space-y-3.5 text-xs text-zinc-300 leading-relaxed max-w-3xl">
+            {(artist.history || artist.bio).split('\n\n').map((paragraph, idx) => (
+              <p key={idx} className="leading-relaxed">
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* TAB: OVERVIEW */}
       {activeSubTab === 'overview' && (
@@ -226,19 +250,44 @@ export const ArtistDashboardView: React.FC<ArtistDashboardViewProps> = ({
 
       {/* TAB: TRACKS */}
       {activeSubTab === 'tracks' && (
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="font-display font-bold text-base text-white">Daftar Audio Preview (30 Detik)</h3>
-            <Button variant="primary" size="sm" onClick={() => setIsTrackModalOpen(true)}>
-              + Tambah Lagu Baru
-            </Button>
+            <h3 className="font-display font-bold text-base text-white">
+              {artist.spotifyEmbedUrl ? 'Pemutar Resmi Spotify' : 'Koleksi Musik & Trek Audio'}
+            </h3>
+            {!artist.spotifyEmbedUrl && (
+              <Button variant="primary" size="sm" onClick={() => setIsTrackModalOpen(true)}>
+                + Tambah Lagu Baru
+              </Button>
+            )}
           </div>
-          {artist.tracks && artist.tracks.length > 0 ? (
-            artist.tracks.map((t) => <AudioPlayer key={t.trackId} track={t} />)
-          ) : (
-            <p className="text-xs text-zinc-500 py-8 text-center bg-[#111113] rounded-2xl border border-[#27272a]">
-              Belum ada trek audio yang diunggah.
-            </p>
+
+          {artist.spotifyEmbedUrl && (
+            <div className="w-full rounded-2xl overflow-hidden bg-black/60 shadow-xl border border-zinc-800">
+              <iframe
+                data-testid="embed-iframe"
+                style={{ borderRadius: '12px', display: 'block' }}
+                src={artist.spotifyEmbedUrl}
+                width="100%"
+                height="352"
+                frameBorder="0"
+                allowFullScreen
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"
+              />
+            </div>
+          )}
+
+          {!artist.spotifyEmbedUrl && (
+            artist.tracks && artist.tracks.length > 0 ? (
+              artist.tracks.map((t, idx) => (
+                <AudioPlayer key={t.trackId} track={t} artist={artist} isHypeTrack={idx === 0} />
+              ))
+            ) : (
+              <p className="text-xs text-zinc-500 py-8 text-center bg-[#111113] rounded-2xl border border-[#27272a]">
+                Belum ada trek audio yang diunggah.
+              </p>
+            )
           )}
         </div>
       )}

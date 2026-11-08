@@ -17,6 +17,8 @@ namespace GigRadarApi.Models
         public string Bio { get; set; } = string.Empty;
         public string PhotoUrl { get; set; } = string.Empty;
         public string CoverUrl { get; set; } = string.Empty;
+        public string LogoUrl { get; set; } = string.Empty;
+        public string SpotifyEmbedUrl { get; set; } = string.Empty;
         public string Genre { get; set; } = string.Empty;
         public string City { get; set; } = string.Empty;
         public string SocialLinks { get; set; } = string.Empty;
